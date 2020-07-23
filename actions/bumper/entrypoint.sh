@@ -131,7 +131,7 @@ fi
 if [ -z "$version_file_path" ] || [ -z "$version_line_match" ]; then
     echo "Skipping bump of version file."
 else
-    if [ -z "$version_suffix ]; then
+    if [ -z "$version_suffix" ]; then
         version_new=$new
     else
         version_new=${new}-${version_suffix}
