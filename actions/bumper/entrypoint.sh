@@ -141,7 +141,7 @@ else
         echo "No version line found; no bump of version file."
     else
         new_line=$(echo $version_line | sed -E -e "s/(.*)([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)/\1${version_new}\3/")
-        sed -E -i bak -e "s/${version_line}/${new_line}/" $version_file_path
+        sed -E -i.bak -e "s/${version_line}/${new_line}/" $version_file_path
     fi
     git config --global user.email "robot@terra.team"
     git config --global user.name "bumptagbot"
