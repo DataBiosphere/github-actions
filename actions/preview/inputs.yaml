@@ -1,0 +1,39 @@
+# Input environment variables. All variables below are expected as upper-case.
+github_token:
+  description: GitHub PAT for cloning terra-helmfile repo and posting comments on PRs
+vault_token:
+  description: Vault token for retrieving Google credentials
+vault_sa_path:
+  description: Path to Google credentials in Vault
+env_id:
+  description: Unique identifier for this environment. Recommended syntax is [short prefix identifying service][pr number]
+vault_address:
+  description: URL of Vault deployment
+  default: https://clotho.broadinstitute.org:8200
+preview_cmd:
+  description: Preview action to perform. Valid values are 'create' and 'delete'
+  default: create
+gke_cluster:
+  description: GKE cluster where the environment will be deployed
+  default: terra-integration
+gke_project:
+  description: GCP project where the cluster lives
+  default: terra-kernel-k8s
+gke_zone:
+  description: GCP zone where the cluster lives
+  default: us-central1-a
+verbosity:
+  description: Verbosity level, with 1 being silent and 6 being debug
+  default: 6
+terra_helmfile_branch:
+  description: Branch of the terra-helmfile repo to use
+  default: master 
+versions_b64:
+  description: Versions in terra-helmfile versions.yaml file format (base64-encoded JSON)
+  default: eyJyZWxlYXNlcyI6e319Cg==
+test_status:
+  description: Test status. Only used for report command
+  default: true
+test_data_b64:
+  description: Test data as output by the test step (base64-encoded JSON). Only used for report command
+  default: e30K

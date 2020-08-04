@@ -1,0 +1,15 @@
+name: 'Terra Preview Environment Test Action Template'
+description: 'Template action for running tests on Terra preview environments'
+author: 'Broad Institute DSP DevOps'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+inputs:
+  env_data_b64:
+    description: 'Base64-encoded JSON as output by the preview environment creation action'
+    required: true
+outputs:
+  testData:
+    description: 'Output JSON (base64 encoded) containign URLs to any test logs or dashboards'
+  status:
+    description: 'Boolean (true/false) status of the tests'

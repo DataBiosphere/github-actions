@@ -1,0 +1,26 @@
+{
+  "fqdns": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "workspacemanager": "string"
+      }
+    ],
+    "value": {
+      "workspacemanager": "workspace.wsm-1.preview.envs.broadinstitute.org."
+    }
+  },
+  "ingress_ips": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "workspacemanager": "string"
+      }
+    ],
+    "value": {
+      "workspacemanager": "35.239.135.177"
+    }
+  }
+}
