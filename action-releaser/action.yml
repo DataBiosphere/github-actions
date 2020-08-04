@@ -1,0 +1,13 @@
+name: "GiutHub Action Releaser"
+description: "Build and Release GitHub Actions"
+author: "Data Biosphere"
+branding:
+  icon: git-merge
+  color: purple
+inputs:
+  actions_dir:
+    description: The actions directory
+    default: actions
+runs:
+  using: "node12"
+  main: "main.js"
