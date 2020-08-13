@@ -1,0 +1,38 @@
+name: Manage Preview Environment
+
+on:
+  issue_comment:
+    types: [created]
+env:
+  ENV_PREFIX: wsm
+  HELM_CHART_NAME: workspacemanager
+jobs:
+  preview-create:
+    name: Create Preview Environment
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.comment.body, 'test')
+    steps:
+    - name: Get short SHA
+      id: slug
+      run: echo ::set-output name=sha7::$(echo ${{ github.event.issue.pull_request.head.sha }} | cut -c1-7)
+    - name: Construct default version JSON
+      id: versions-default
+      run: echo ::set-output name=versions::{\"releases\":{\"${HELM_CHART_NAME}\":{\"appVersion\":\"pr${{ github.event.issue.pull_request.number }}-${{ steps.slug.outputs.sha7 }}\"}}}
+    - name: Construct version override JSON
+      id: versions-override
+      run: |
+        comment='${{ github.event.comment.body }}'
+        override=${comment#'preview-create'}
+        if [[ $override == '' ]]; then override={}
+        echo ::set-output name=versions::$override
+    - name: Construct merged version JSON
+      id: version-merge
+      run: |
+        echo '${{ steps.versions-default.outputs.versions }}' > default.json
+        echo '${{ steps.versions-override.outputs.versions }}' > override.json
+        merge=$(jq -sc '.[0] * .[1]' default.json override.json)
+        echo "merge: $merge"
+        echo ::set-output name=versions::$merge
+    - name: Echo
+      run: |
+        echo '${{ steps.versions-merge.outputs.versions }}'
