@@ -36,3 +36,4 @@ jobs:
     - name: Echo
       run: |
         echo '${{ steps.versions-merge.outputs.versions }}'
+
