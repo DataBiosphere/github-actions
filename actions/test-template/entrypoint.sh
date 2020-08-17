@@ -45,33 +45,6 @@ main() {
     echo ::set-output name=testData::$(echo "$test_data" | base64 | tr -d \\n)
 }
 
-# post_result_comment() {
-#     local pr_url="$1"
-#     local pass=$2
-
-#     if $pass; then
-#         local comment="#### Tests passed!\n[View logs here]($action_run_url)"
-#     else
-#         local comment="#### Tests failed!\n[View logs here]($action_run_url)"
-#     fi
-#     post_comment "$pr_url" "$comment"
-# }
-
-# post_comment() {
-#     local pr_url="$1"
-#     local comment="$2"
-#     local comment_json='{"body":"'
-#     comment_json+=$comment
-#     comment_json+='"}'
-#     curl -s \
-#       -X POST \
-#       -H "Accept: application/vnd.github.v3+json" \
-#       "$pr_url/comments" \
-#       -u "broadbot:$github_token" \
-#       -d "$comment_json" > /dev/null
-#     eok "$pr_url updated"
-# }
-
 colblk='\033[0;30m' # Black - Regular
 colred='\033[0;31m' # Red
 colgrn='\033[0;32m' # Green

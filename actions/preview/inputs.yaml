@@ -24,7 +24,7 @@ gke_zone:
   default: us-central1-a
 verbosity:
   description: Verbosity level, with 1 being silent and 6 being debug
-  default: 6
+  default: 4
 terra_helmfile_branch:
   description: Branch of the terra-helmfile repo to use
   default: master 
