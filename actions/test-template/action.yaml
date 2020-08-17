@@ -10,6 +10,6 @@ inputs:
     required: true
 outputs:
   testData:
-    description: 'Output JSON (base64 encoded) containign URLs to any test logs or dashboards'
+    description: 'Output JSON (base64 encoded) containing URLs to any test logs or dashboards'
   status:
     description: 'Boolean (true/false) status of the tests'
