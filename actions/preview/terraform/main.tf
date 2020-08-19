@@ -1,5 +1,5 @@
 module "env" {
-  source = "github.com/broadinstitute/terraform-ap-modules.git//terra-preview-env?ref=gm-preview"
+  source = "github.com/broadinstitute/terraform-ap-modules.git//terra-preview-env?ref=terra-preview-env-0.0.0"
 
   providers = {
     google.target      = google
