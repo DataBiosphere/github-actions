@@ -11,7 +11,7 @@ vault_address:
   description: URL of Vault deployment
   default: https://clotho.broadinstitute.org:8200
 preview_cmd:
-  description: Preview action to perform. Valid values are 'create' and 'delete'
+  description: Preview action to perform. Valid values are 'create', 'delete', and 'report'
   default: create
 gke_cluster:
   description: GKE cluster where the environment will be deployed

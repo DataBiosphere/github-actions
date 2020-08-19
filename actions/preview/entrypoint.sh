@@ -4,6 +4,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+if (( "${BASH_VERSION%%.*}" < 4 )); then
+    ecrit "Bash 4 or later required!"
+    exit 1
+fi
+
 # Set variables from their all-caps versions, taking defaults from config file
 set_vars() {
     local config_file=$1
@@ -205,13 +210,13 @@ update_version_output() {
     local helm_chart="$3"
 
     local override=true
-    if [[ $(echo $versions | jq ".releases.$helm_chart") == 'null' ]]; then
+    if [[ $(echo "$versions" | jq ".releases.$helm_chart") == 'null' ]]; then
         override=false
     fi
     edumpvar override
 
-    if [[ override && $(echo $versions | jq ".releases.$helm_chart.appVersion") != 'null' ]]; then
-        local service_version=$(echo $versions | jq -r ".releases.$helm_chart.appVersion")
+    if [[ override && $(echo "$versions" | jq ".releases.$helm_chart.appVersion") != 'null' ]]; then
+        local service_version=$(echo "$versions" | jq -r ".releases.$helm_chart.appVersion")
         local service_pr_num=$(service_version_to_pr_num "$service_version")
         write_value output.yaml "services.$service.appVersion" "$service_version"
         write_value output.yaml "pullRequests[+]" "https://github.com/$service_repo/pull/$service_pr_num"
@@ -222,7 +227,7 @@ update_version_output() {
     fi
 
     if [[ override && $(echo $versions | jq ".releases.$helm_chart.chartVersion") != 'null' ]]; then
-        local chart_version=$(echo $versions | jq -r ".releases.$helm_chart.chartVersion")
+        local chart_version=$(echo "$versions" | jq -r ".releases.$helm_chart.chartVersion")
         local chart_pr_num=$(chart_version_to_pr_num "$chart_version")
         write_value output.yaml "services.$service.chartVersion" "$chart_version"
         write_value output.yaml "pullRequests[+]" "https://github.com/broadinstitute/terra-helm/pull/$chart_pr_num"
@@ -254,7 +259,7 @@ service_version_to_pr_num() {
     local version="$1"
     local regex='pr([0-9]+)'
     if [[ $version =~ $regex ]]; then
-        echo ${BASH_REMATCH[1]}
+        echo "${BASH_REMATCH[1]}"
     else
         ecrit "Can't find PR # in $version!"
         exit 1
@@ -265,7 +270,7 @@ chart_version_to_pr_num() {
     local version="$1"
     local regex='^[0-9]+\.[0-9]+\.[0-9]+-([0-9]+)'
     if [[ $version =~ $regex ]]; then
-        echo ${BASH_REMATCH[1]}
+        echo "${BASH_REMATCH[1]}"
     else
         ecrit "Can't find PR # in $version!"
         exit 1
@@ -284,7 +289,7 @@ post_comments() {
     local env_id="$1"
 
     enotify "Updating PRs"
-    for pr in "${pr_api_urls[@]}"; do
+    for pr_api_url in "${pr_api_urls[@]}"; do
         if [[ "$preview_cmd" == 'create' ]]; then 
             yq r -j output.yaml | jq '.' > output.json
 
@@ -301,11 +306,11 @@ post_comments() {
             fi
             local comment="#### Tests $test_string on Terra preview environment \`$env_id\`\n"
             comment+="##### Test info:\n"
-            comment+="$(echo $test_data | jq -r '. | to_entries[] | .key + ": " + .value' | awk '{printf "%s\\n", $0}')"
+            comment+="$(echo "$test_data" | jq -r '. | to_entries[] | .key + ": " + .value' | awk '{printf "%s\\n", $0}')"
         fi
 
-        edumpvar pr comment
-        post_comment "$pr" "$comment"
+        edumpvar pr_api_url comment
+        post_comment "$pr_api_url" "$comment"
     done
 }
 
@@ -360,7 +365,7 @@ function ecrit ()  { verb_lvl=$crt_lvl elog "${colpur}FATAL${colrst} --- $@" ;}
 function edumpvar () { for var in $@ ; do edebug "$var=${!var}" ; done }
 function elog() {
         if [ $verbosity -ge $verb_lvl ]; then
-                datestring=`date +"%Y-%m-%d %H:%M:%S"`
+                datestring=$(date +"%Y-%m-%d %H:%M:%S")
                 echo -e "$datestring - $@"
         fi
 }
@@ -368,8 +373,8 @@ function elog() {
 pushd /preview > /dev/null
 
 set_vars "inputs.yaml"
-versions=$(echo $versions_b64 | base64 -d)
-test_data=$(echo $test_data_b64 | base64 -d)
+versions=$(echo "$versions_b64" | base64 -d)
+test_data=$(echo "$test_data_b64" | base64 -d)
 edumpvar env_id preview_cmd gke_cluster gke_project gke_zone verbosity terra_helmfile_branch versions
 main
 
