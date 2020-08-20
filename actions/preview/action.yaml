@@ -1,0 +1,9 @@
+name: 'Terra Preview Environment'
+description: 'Action for managing Terra preview environment lifecycle'
+author: 'Broad Institute DSP DevOps'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+outputs:
+  output:
+    description: 'Output JSON (base64 encoded)'

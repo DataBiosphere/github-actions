@@ -1,0 +1,4 @@
+workspacemanager:
+  repo: databiosphere/terra-workspace-manager
+  helm_chart: workspacemanager
+  image: terra-workspace-manager
