@@ -120,14 +120,13 @@ terraform_apply() {
     pushd terraform > /dev/null
 
     terraform init
-    echo "owner = \"$env_id\"" >> preview.tfvars
     if terraform workspace list | grep "$env_id"; then
         terraform workspace select "$env_id"
     else
         terraform workspace new "$env_id"
     fi
 
-    terraform apply -auto-approve -var-file=preview.tfvars -var "versions=$versions_b64"
+    terraform apply -auto-approve -var "versions=$versions_b64"
     terraform output -json > output.json
 
     eok "Applied Terraform configuration in workspace $env_id"
@@ -141,11 +140,10 @@ terraform_destroy() {
     pushd terraform > /dev/null
 
     terraform init
-    echo "owner = \"$env_id\"" >> preview.tfvars
     if terraform workspace list | grep "$env_id"; then
         terraform workspace select "$env_id"
         terraform output -json > output.json
-        terraform destroy -auto-approve -var-file=preview.tfvars
+        terraform destroy -auto-approve
         terraform workspace select default
         terraform workspace delete "$env_id"
         eok "Terraform workspace $env_id cleaned up"
@@ -162,7 +160,6 @@ terraform_get_output() {
     pushd terraform > /dev/null
 
     terraform init
-    echo "owner = \"$env_id\"" >> preview.tfvars
     if terraform workspace list | grep "$env_id"; then
         terraform workspace select "$env_id"
         terraform output -json > output.json
@@ -219,8 +216,13 @@ update_version_output() {
         local service_version=$(echo "$versions" | jq -r ".releases.$helm_chart.appVersion")
         local service_pr_num=$(service_version_to_pr_num "$service_version")
         write_value output.yaml "services.$service.appVersion" "$service_version"
-        write_value output.yaml "pullRequests[+]" "https://github.com/$service_repo/pull/$service_pr_num"
-        pr_api_urls+=("https://api.github.com/repos/$service_repo/issues/$service_pr_num")
+
+        if [[ $service_pr_num != '' ]]; then
+            write_value output.yaml "pullRequests[+]" "https://github.com/$service_repo/pull/$service_pr_num"
+            pr_api_urls+=("https://api.github.com/repos/$service_repo/issues/$service_pr_num")
+        else
+            edebug "No PR found matching $service_version"
+        fi
     else
         local service_version=$(yq r terra-helmfile/versions.yaml "releases.$helm_chart.appVersion")
         write_value output.yaml "services.$service.appVersion" "$service_version"
@@ -230,8 +232,13 @@ update_version_output() {
         local chart_version=$(echo "$versions" | jq -r ".releases.$helm_chart.chartVersion")
         local chart_pr_num=$(chart_version_to_pr_num "$chart_version")
         write_value output.yaml "services.$service.chartVersion" "$chart_version"
-        write_value output.yaml "pullRequests[+]" "https://github.com/broadinstitute/terra-helm/pull/$chart_pr_num"
-        pr_api_urls+=("https://api.github.com/repos/broadinstitute/terra-helm/issues/$chart_pr_num")
+
+        if [[ $chart_pr_num != '' ]]; then
+            write_value output.yaml "pullRequests[+]" "https://github.com/broadinstitute/terra-helm/pull/$chart_pr_num"
+            pr_api_urls+=("https://api.github.com/repos/broadinstitute/terra-helm/issues/$chart_pr_num")
+        else
+            edebug "No PR found matching $chart_version"
+        fi
     else
         local chart_version=$(yq r terra-helmfile/versions.yaml "releases.$helm_chart.chartVersion")
         write_value output.yaml "services.$service.chartVersion" "$chart_version"
@@ -251,7 +258,11 @@ update_versions() {
     echo "$versions" > input_versions.yaml
     edebug "input versions.yaml: $(cat input_versions.yaml)"
     edebug "original versions.yaml: $(cat versions.yaml)"
-    yq m -ix versions.yaml input_versions.yaml
+    if [[ $versions != '{"releases":{}}' ]]; then
+        yq m -ix versions.yaml input_versions.yaml
+    else
+        edebug "No version overrides"
+    fi
     edebug "merged versions.yaml: $(cat versions.yaml)"
 }
 
@@ -260,9 +271,6 @@ service_version_to_pr_num() {
     local regex='pr([0-9]+)'
     if [[ $version =~ $regex ]]; then
         echo "${BASH_REMATCH[1]}"
-    else
-        ecrit "Can't find PR # in $version!"
-        exit 1
     fi
 }
 
@@ -271,9 +279,6 @@ chart_version_to_pr_num() {
     local regex='^[0-9]+\.[0-9]+\.[0-9]+-([0-9]+)'
     if [[ $version =~ $regex ]]; then
         echo "${BASH_REMATCH[1]}"
-    else
-        ecrit "Can't find PR # in $version!"
-        exit 1
     fi
 }
 

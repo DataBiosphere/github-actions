@@ -14,8 +14,8 @@ ARG HELMFILE_SHA256=dd074934188ac11275109a01f98eb0651d49c1566ddf3141dc71236e96b3
 ARG YQ_VERSION=3.3.2
 ARG YQ_SHA256=0b0700cfee1d642a0a19f8f9261b2f0a11b7174ef8bcd39e9ed334d9519f0125
 
-ARG TERRAFORM_VERSION=0.12.29
-ARG TERRAFORM_SHA256=872245d9c6302b24dc0d98a1e010aef1e4ef60865a2d1f60102c8ad03e9d5a1d
+ARG TERRAFORM_VERSION=0.13.3
+ARG TERRAFORM_SHA256=35c662be9d32d38815cde5fa4c9fa61a3b7f39952ecd50ebf92fd1b2ddd6109b
 
 LABEL "repository"="https://github.com/DataBiosphere/github-actions/tree/master/actions/preview"
 LABEL "homepage"="https://github.com/DataBiosphere/github-actions/tree/master/actions/preview"
