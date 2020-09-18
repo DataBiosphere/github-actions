@@ -1,5 +1,5 @@
 module "env" {
-  source = "github.com/broadinstitute/terraform-ap-modules.git//terra-env?ref=gm-preview-consolidate"
+  source = "github.com/broadinstitute/terraform-ap-modules.git//terra-env?ref=master"
 
   providers = {
     google.target      = google
@@ -12,7 +12,7 @@ module "env" {
   cluster_short  = var.cluster_short
   owner          = var.owner
 
-  preview = true
+  env_type = "preview"
 
   terra_apps = var.terra_apps
 
