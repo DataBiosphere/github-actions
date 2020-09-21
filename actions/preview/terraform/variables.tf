@@ -3,6 +3,7 @@
 #
 variable "google_project" {
   type        = string
+  default     = "terra-kernel-k8s"
   description = "The google project in which to create resources"
 }
 variable "dns_google_project" {
@@ -18,11 +19,12 @@ variable "region" {
 variable "cluster" {
   type        = string
   description = "Terra GKE cluster suffix, whatever is after terra-"
+  default     = "integration"
 }
 variable "cluster_short" {
   type        = string
   description = "Optional short cluster name"
-  default     = ""
+  default     = "integ"
 }
 variable "owner" {
   type        = string
@@ -41,15 +43,18 @@ variable "dns_zone_name" {
   description = "DNS zone name"
   default     = "dsp-envs"
 }
+locals {
+  subdomain_name = ".${local.owner}.preview"
+}
 
 #
 # Service Vars
 #
 variable "terra_apps" {
-  type = map(string)
-  description = "Map of app Helm chart names to ingress hostnames"
+  type = map(bool)
+  description = "Terra apps to enable"
   default = {
-    workspacemanager = "workspace"
+    workspace_manager = true
   }
 }
 
