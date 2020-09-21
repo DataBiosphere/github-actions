@@ -4,10 +4,6 @@ author: "Data Biosphere"
 branding:
   icon: git-merge
   color: purple
-inputs:
-  actions_dir:
-    description: The actions directory
-    default: actions
 runs:
-  using: "node12"
-  main: "main.js"
+  using: 'docker'
+  image: 'Dockerfile'

@@ -4,124 +4,39 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-: "${GH_TOKEN:?Environment variable GH_TOKEN must be set}"
-
-show_help() {
-cat << EOF
-Usage: $(basename "$0") <options>
-
-    -h, --help               Display help
-    -d, --actions-dir        The actions directory (defaut: actions)
-    -o, --owner              The repo owner
-    -r, --repo               The repo name
-EOF
-}
-
 main() {
-    local actions_dir=actions
-    local owner=
-    local repo=
-
-    parse_command_line "$@"
-
-    echo "$repo"
     local repo_root
     repo_root=$(git rev-parse --show-toplevel)
-    pushd "$repo_root" > /dev/null
 
     echo "Discovering changed actions ..."
     local changed_actions=()
     readarray -t changed_actions <<< "$(lookup_changed_actions)"
 
     if [[ -n "${changed_actions[*]}" ]]; then
-
         for action in "${changed_actions[@]}"; do
-            if [[ -d "$chart" ]]; then
-                build_action "$action"
+            if [[ -d "$action" ]]; then
+                tag_action "$action"
             else
                 echo "Action '$action' no longer exists in repo. Skipping it..."
             fi
         done
-
-        sleep 1
-        release_actions
-
     else
         echo "Nothing to do. No action changes detected."
-    fi
-
-    popd > /dev/null
-}
-
-parse_command_line() {
-    while :; do
-        case "${1:-}" in
-            -h|--help)
-                show_help
-                exit
-                ;;
-            -d|--actions-dir)
-                if [[ -n "${2:-}" ]]; then
-                    actions_dir="$2"
-                    shift
-                else
-                    echo "ERROR: '-d|--actions-dir' cannot be empty." >&2
-                    show_help
-                    exit 1
-                fi
-                ;;
-            -o|--owner)
-                if [[ -n "${2:-}" ]]; then
-                    owner="$2"
-                    shift
-                else
-                    echo "ERROR: '--owner' cannot be empty." >&2
-                    show_help
-                    exit 1
-                fi
-                ;;
-            -r|--repo)
-                if [[ -n "${2:-}" ]]; then
-                    repo="$2"
-                    shift
-                else
-                    echo "ERROR: '--repo' cannot be empty." >&2
-                    show_help
-                    exit 1
-                fi
-                ;;
-            *)
-                break
-                ;;
-        esac
-
-        shift
-    done
-
-    if [[ -z "$owner" ]]; then
-        echo "ERROR: '-o|--owner' is required." >&2
-        show_help
-        exit 1
-    fi
-
-    if [[ -z "$repo" ]]; then
-        echo "ERROR: '-r|--repo' is required." >&2
-        show_help
-        exit 1
     fi
 }
 
 lookup_latest_tag() {
-   git fetch --tags > /dev/null 2>&1
+    local chart="$1"
+    git fetch --tags > /dev/null 2>&1
 
-   if ! git describe --tags --abbrev=0 2> /dev/null; then
-       git rev-list --max-parents=0 --first-parent HEAD
-   fi
+    if ! git describe --tags --abbrev=0 2> /dev/null; then
+        git rev-list --max-parents=0 --first-parent HEAD
+    fi
 
-   case "$tag_context" in
-        *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' refs/tags/[0-9]*.[0-9]*.[0-9]* refs/tags/v[0-9]*.[0-9]*.[0-9]* | cut -d / -f 3-);;
-        *branch*) tag=$(git describe --tags --match "*[v0-9].*[0-9\.]" --abbrev=0);;
-        * ) echo "Unrecognised context"; exit 1;;
+    case "$tag_context" in
+            *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' refs/tags/[0-9]*.[0-9]*.[0-9]* refs/tags/v[0-9]*.[0-9]*.[0-9]* | cut -d / -f 3-);;
+            *branch*) tag=$(git describe --tags --match "*[v0-9].*[0-9\.]" --abbrev=0);;
+            * ) echo "Unrecognised context"; exit 1;;
     esac
 
     # get current commit hash for tag
@@ -210,4 +125,40 @@ update_index() {
     popd > /dev/null
 }
 
-main "$@"
+colblk='\033[0;30m' # Black - Regular
+colred='\033[0;31m' # Red
+colgrn='\033[0;32m' # Green
+colylw='\033[0;33m' # Yellow
+colpur='\033[0;35m' # Purple
+colrst='\033[0m'    # Text Reset
+
+### verbosity levels
+silent_lvl=0
+crt_lvl=1
+err_lvl=2
+wrn_lvl=3
+ntf_lvl=4
+inf_lvl=5
+dbg_lvl=6
+
+## esilent prints output even in silent mode
+function esilent () { verb_lvl=$silent_lvl elog "$@" ;}
+function enotify () { verb_lvl=$ntf_lvl elog "$@" ;}
+function eok ()    { verb_lvl=$ntf_lvl elog "SUCCESS - $@" ;}
+function ewarn ()  { verb_lvl=$wrn_lvl elog "${colylw}WARNING${colrst} - $@" ;}
+function einfo ()  { verb_lvl=$inf_lvl elog "${colwht}INFO${colrst} ---- $@" ;}
+function edebug () { verb_lvl=$dbg_lvl elog "${colgrn}DEBUG${colrst} --- $@" ;}
+function eerror () { verb_lvl=$err_lvl elog "${colred}ERROR${colrst} --- $@" ;}
+function ecrit ()  { verb_lvl=$crt_lvl elog "${colpur}FATAL${colrst} --- $@" ;}
+function edumpvar () { for var in $@ ; do edebug "$var=${!var}" ; done }
+function elog() {
+        if [ $verbosity -ge $verb_lvl ]; then
+                datestring=$(date +"%Y-%m-%d %H:%M:%S")
+                echo -e "$datestring - $@"
+        fi
+}
+
+pushd /releaser > /dev/null
+set_vars "inputs.yaml"
+main
+popd > /dev/null

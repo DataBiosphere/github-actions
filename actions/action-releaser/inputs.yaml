@@ -1,0 +1,6 @@
+# Input environment variables. All variables below are expected as upper-case.
+github_token:
+  description: GitHub PAT for cloning terra-helmfile repo and posting comments on PRs
+actions_dir:
+  description: Directory where action subdirectories are located
+  default: actions
