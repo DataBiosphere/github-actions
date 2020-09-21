@@ -1,0 +1,8 @@
+# Input environment variables. All variables below are expected as upper-case.
+env_data_b64:
+  description: Base64-encoded JSON as output by the preview environment creation action
+action_run_url:
+  description: URL of this action run, as constructed from the GITHUB_RUN_ID action env variable
+verbosity:
+  description: Verbosity level, with 1 being silent and 6 being debug
+  default: 4
