@@ -1,6 +1,12 @@
 # Input environment variables. All variables below are expected as upper-case.
 github_token:
   description: GitHub PAT for cloning terra-helmfile repo and posting comments on PRs
+github_repo:
+  description: GitHub repository to target
+  default: databiosphere/github-actions
 actions_dir:
   description: Directory where action subdirectories are located
   default: actions
+version_bump_level:
+  description: Level of version (major/minor/patch) to bump. Defaults to minor.
+  default: minor

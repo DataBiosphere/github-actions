@@ -8,121 +8,77 @@ main() {
     local repo_root
     repo_root=$(git rev-parse --show-toplevel)
 
-    echo "Discovering changed actions ..."
+    einfo "Discovering changed actions ..."
     local changed_actions=()
     readarray -t changed_actions <<< "$(lookup_changed_actions)"
 
     if [[ -n "${changed_actions[*]}" ]]; then
         for action in "${changed_actions[@]}"; do
             if [[ -d "$action" ]]; then
-                tag_action "$action"
+                local current_tag=$(lookup_latest_tag $action)
+                local new_tag=$(semver bump $version_bump_level $current_tag)
+                tag_action "$action" "$new_tag"
             else
-                echo "Action '$action' no longer exists in repo. Skipping it..."
+                ewarn "Action '$action' no longer exists in repo. Skipping it..."
             fi
         done
+        push_tags
     else
-        echo "Nothing to do. No action changes detected."
+        einfo "Nothing to do. No action changes detected."
     fi
 }
 
 lookup_latest_tag() {
-    local chart="$1"
+    local action="$1"
     git fetch --tags > /dev/null 2>&1
 
-    if ! git describe --tags --abbrev=0 2> /dev/null; then
-        git rev-list --max-parents=0 --first-parent HEAD
-    fi
-
-    case "$tag_context" in
-            *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' refs/tags/[0-9]*.[0-9]*.[0-9]* refs/tags/v[0-9]*.[0-9]*.[0-9]* | cut -d / -f 3-);;
-            *branch*) tag=$(git describe --tags --match "*[v0-9].*[0-9\.]" --abbrev=0);;
-            * ) echo "Unrecognised context"; exit 1;;
-    esac
-
-    # get current commit hash for tag
-    tag_commit=$(git rev-list -n 1 $tag)
-
-    # get current commit hash
-    commit=$(git rev-parse HEAD)
+    edebug "Looking for latest tag for $action"
+    git for-each-ref --sort=-taggerdate --count=1 --format '%(refname:lstrip=-1)' "refs/tags/$action-*"
 }
 
-filter_charts() {
-    while read chart; do
-        [[ ! -d "$chart" ]] && continue
-        local file="$chart/Chart.yaml"
+filter_actions() {
+    while read action; do
+        [[ ! -d "$action" ]] && continue
+        local file="$action/action.yaml"
         if [[ -f "$file" ]]; then
-            echo $chart
+            echo $action
         else
-           echo "WARNING: $file is missing, assuming that '$chart' is not a Helm chart. Skipping." 1>&2
+            ewarn "$file is missing, assuming that '$action' is not a GitHub action. Skipping."
         fi
     done
 }
 
-lookup_changed_charts() {
-    #look up for changed files in the latest commit
+lookup_changed_actions() {
+    #look for changed files in the latest commit
     local changed_files
-    changed_files=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) -- $charts_dir)
+    changed_files=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) -- $actions_dir)
 
     local fields
-    if [[ "$charts_dir" == '.' ]]; then
+    if [[ "$actions_dir" == '.' ]]; then
         fields='1'
     else
         fields='1,2'
     fi
 
-    cut -d '/' -f "$fields" <<< "$changed_files" | uniq | filter_charts
+    cut -d '/' -f "$fields" <<< "$changed_files" | uniq | filter_actions
 }
 
-package_chart() {
-    local chart="$1"
+tag_action() {
+    local action="$1"
+    local version="$2"
+    local tag="$tag-$version"
 
-    echo "Packaging chart '$chart'..."
-
-    branch=$(git rev-parse --abbrev-ref HEAD)
-    if [[ "$branch" != 'master' ]]; then
-        version=$(helm show chart $chart | sed -ne 's/^version: //p')
-        timestamp=$(date +%s)
-        sha=$(git rev-parse --short=6 HEAD)
-        if echo $GITHUB_REF | grep 'refs/pull/'; then
-            pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-            rel_version="$version-$pull_number.$timestamp.$sha"
-            echo "In a PR. Releasing '$rel_version' version..."
-        else
-            rel_version="$version-$branch.$timestamp.$sha"
-            echo "Not on master branch. Releasing '$rel_version' version..."
-        fi
-
-        helm package "$chart" --version "$rel_version" --destination .cr-release-packages --dependency-update
-    else
-        helm package "$chart" --destination .cr-release-packages --dependency-update
-    fi
+    einfo "Creating tag '$tag'"
+    git tag "$tag"
 }
 
-release_charts() {
-    echo 'Releasing charts...'
+push_tags() {
+    einfo 'Committing and pushing tags...'
 
-        cr upload -o "$owner" -r "$repo" -t "$CR_TOKEN"
-
-}
-
-update_index() {
-    echo 'Updating charts repo index...'
-
-    set -x
-
-    cr index -o "$owner" -r "$repo" -c "$charts_repo_url" -t "$CR_TOKEN"
-
-    cp --force .cr-index/index.yaml "$gh_pages_worktree/index.yaml"
-
-    pushd "$gh_pages_worktree" > /dev/null
-
-    git add index.yaml
     git commit --message="Update index.yaml" --signoff
 
-    local repo_url=https://x-access-token:${CR_TOKEN}@github.com/${owner}/${repo}
-    git push "$repo_url" HEAD:gh-pages
-
-    popd > /dev/null
+    local repo_url=https://x-access-token:${github_token}@github.com/${github_repo}
+    git push --tags "$repo_url"
 }
 
 colblk='\033[0;30m' # Black - Regular
@@ -154,7 +110,7 @@ function edumpvar () { for var in $@ ; do edebug "$var=${!var}" ; done }
 function elog() {
         if [ $verbosity -ge $verb_lvl ]; then
                 datestring=$(date +"%Y-%m-%d %H:%M:%S")
-                echo -e "$datestring - $@"
+                echo -e "$datestring - $@" 1>&2
         fi
 }
 
