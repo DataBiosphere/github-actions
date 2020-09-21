@@ -4,9 +4,24 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# Set variables from their all-caps versions, taking defaults from config file
+set_vars() {
+    local config_file=$1
+    local vars=$(yq r "$1" --printMode p '*')
+    readarray -t varsArr <<< "$vars"
+    for var in "${varsArr[@]}"; do
+        varCaps="${var^^}"
+        if [ -z ${!varCaps+x} ]; then
+            eval "$var"=$(yq r "$config_file" "$var.default")
+        else
+            eval "$var"="${!varCaps}"
+        fi
+    done
+}
+
 main() {
-    local repo_root
-    repo_root=$(git rev-parse --show-toplevel)
+    git clone --single-branch --branch "$git_branch" "https://$github_token@github.com/$github_owner/$github_repo"
+    pushd "$github_repo" > /dev/null
 
     einfo "Discovering changed actions ..."
     local changed_actions=()
@@ -26,6 +41,8 @@ main() {
     else
         einfo "Nothing to do. No action changes detected."
     fi
+
+    popd > /dev/null
 }
 
 lookup_latest_tag() {
@@ -77,8 +94,8 @@ push_tags() {
 
     git commit --message="Update index.yaml" --signoff
 
-    local repo_url=https://x-access-token:${github_token}@github.com/${github_repo}
-    git push --tags "$repo_url"
+    local repo_url=https://${github_token}@github.com/${github_owner}/${github_repo}
+    git push --tags origin "$git_branch"
 }
 
 colblk='\033[0;30m' # Black - Regular
