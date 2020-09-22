@@ -1,18 +1,27 @@
 # Input environment variables. All variables below are expected as upper-case.
 github_token:
   description: GitHub PAT for cloning terra-helmfile repo and posting comments on PRs
-github_owner:
-  description: GitHub repository owner
-  default: databiosphere
-github_repo:
-  description: GitHub repository name
-  default: github-actions
-git_branch:
-  description: Git branch to use
-  default: master
 actions_dir:
   description: Directory where action subdirectories are located
   default: actions
 version_bump_level:
   description: Level of version (major/minor/patch) to bump. Defaults to minor.
   default: minor
+verbosity:
+  description: Verbosity level, with 1 being silent and 6 being debug
+  default: 4
+git_branch:
+  description: Git branch to use
+  default: master
+git_user:
+  description: Git user name
+  default: broadbot
+git_email:
+  description: Git user email
+  default: broadbot@broadinstitute.org
+github_owner:
+  description: GitHub repository owner
+  default: DataBiosphere
+github_repo:
+  description: GitHub repository name
+  default: github-actions

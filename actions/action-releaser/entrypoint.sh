@@ -20,6 +20,8 @@ set_vars() {
 }
 
 main() {
+    git_init
+
     git clone --single-branch --branch "$git_branch" "https://$github_token@github.com/$github_owner/$github_repo"
     pushd "$github_repo" > /dev/null
 
@@ -29,10 +31,15 @@ main() {
 
     if [[ -n "${changed_actions[*]}" ]]; then
         for action in "${changed_actions[@]}"; do
-            if [[ -d "$action" ]]; then
+            if [[ -d "$actions_dir/$action" ]]; then
                 local current_tag=$(lookup_latest_tag $action)
-                local new_tag=$(semver bump $version_bump_level $current_tag)
-                tag_action "$action" "$new_tag"
+                if [[ "$current_tag" == '' ]]; then
+                    local new_semver="0.0.0"
+                else
+                    local current_semver=${current_tag#"$action-"}
+                    local new_semver=$(semver bump $version_bump_level $current_semver)
+                fi
+                tag_action "$action" "$new_semver"
             else
                 ewarn "Action '$action' no longer exists in repo. Skipping it..."
             fi
@@ -45,6 +52,11 @@ main() {
     popd > /dev/null
 }
 
+git_init() {
+    git config --global user.name "$git_user"
+    git config --global user.email "$git_email"
+}
+
 lookup_latest_tag() {
     local action="$1"
     git fetch --tags > /dev/null 2>&1
@@ -55,8 +67,8 @@ lookup_latest_tag() {
 
 filter_actions() {
     while read action; do
-        [[ ! -d "$action" ]] && continue
-        local file="$action/action.yaml"
+        [[ ! -d "$actions_dir/$action" ]] && continue
+        local file="$actions_dir/$action/action.yml"
         if [[ -f "$file" ]]; then
             echo $action
         else
@@ -69,33 +81,21 @@ lookup_changed_actions() {
     #look for changed files in the latest commit
     local changed_files
     changed_files=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) -- $actions_dir)
-
-    local fields
-    if [[ "$actions_dir" == '.' ]]; then
-        fields='1'
-    else
-        fields='1,2'
-    fi
-
-    cut -d '/' -f "$fields" <<< "$changed_files" | uniq | filter_actions
+    cut -d '/' -f '2' <<< "$changed_files" | uniq | filter_actions
 }
 
 tag_action() {
     local action="$1"
     local version="$2"
-    local tag="$tag-$version"
+    local tag="$action-$version"
 
     einfo "Creating tag '$tag'"
     git tag "$tag"
 }
 
 push_tags() {
-    einfo 'Committing and pushing tags...'
-
-    git commit --message="Update index.yaml" --signoff
-
-    local repo_url=https://${github_token}@github.com/${github_owner}/${github_repo}
-    git push --tags origin "$git_branch"
+    einfo 'Pushing tags...'
+    git push --tags
 }
 
 colblk='\033[0;30m' # Black - Regular
@@ -119,7 +119,7 @@ function esilent () { verb_lvl=$silent_lvl elog "$@" ;}
 function enotify () { verb_lvl=$ntf_lvl elog "$@" ;}
 function eok ()    { verb_lvl=$ntf_lvl elog "SUCCESS - $@" ;}
 function ewarn ()  { verb_lvl=$wrn_lvl elog "${colylw}WARNING${colrst} - $@" ;}
-function einfo ()  { verb_lvl=$inf_lvl elog "${colwht}INFO${colrst} ---- $@" ;}
+function einfo ()  { verb_lvl=$inf_lvl elog "${colblk}INFO${colrst} ---- $@" ;}
 function edebug () { verb_lvl=$dbg_lvl elog "${colgrn}DEBUG${colrst} --- $@" ;}
 function eerror () { verb_lvl=$err_lvl elog "${colred}ERROR${colrst} --- $@" ;}
 function ecrit ()  { verb_lvl=$crt_lvl elog "${colpur}FATAL${colrst} --- $@" ;}
