@@ -4,10 +4,13 @@ steps:
     'build',
     '-t',
     'us-central1-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_ACTION_NAME}:${_VERSION}',
+    '-t',
+    'us-central1-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_ACTION_NAME}:latest',
     'actions/${_ACTION_NAME}'
   ]
 images:
 - 'us-central1-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_ACTION_NAME}:${_VERSION}'
+- 'us-central1-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_ACTION_NAME}:latest'
 tags:
 - '${_ACTION_NAME}'
 - '${_VERSION}'

@@ -17,3 +17,4 @@ Outputs are set using the GH actions `echo ::set-output name=[output name]::[out
 |---|---|
 |status|Boolean (true/false) status of the tests|
 |testData|Base64-encoded JSON map of URLs to any test logs or dashboards. Will be output to PR comments|
+
