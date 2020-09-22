@@ -1,4 +1,4 @@
-# chart-releaser
+# action-releaser
 
 A Github Action to automatically bump and tag master, on merge, with new versions for any changed GitHub actions defined in a repository.
 
