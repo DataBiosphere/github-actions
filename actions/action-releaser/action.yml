@@ -1,0 +1,9 @@
+name: "GiutHub Action Releaser"
+description: "Build and Release GitHub Actions"
+author: "Data Biosphere"
+branding:
+  icon: git-merge
+  color: purple
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

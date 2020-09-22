@@ -1,0 +1,15 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t',
+    'us-central1-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_ACTION_NAME}:${_VERSION}',
+    'actions/${_ACTION_NAME}'
+  ]
+images:
+- 'us-central1-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_ACTION_NAME}:${_VERSION}'
+tags:
+- '${_ACTION_NAME}'
+- '${_VERSION}'
+options:
+  dynamic_substitutions: true
