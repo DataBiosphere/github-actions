@@ -23,8 +23,7 @@ steps:
 
 Grab a specific version of the action-releaser action:
 ```
-- name: Bump version and push tags
-  uses: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/action-releaser:0.0.0
+uses: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/action-releaser:0.0.0
 ```
 
 ### Point to code
@@ -32,20 +31,17 @@ To point a workflow to the definition of the action in this repository, use the 
 
 Build the action from the latest code in master:
 ```
-- name: Bump version and push tags
-  uses: databiosphere/github-actions/actions/action-releaser@master
+uses: databiosphere/github-actions/actions/action-releaser@master
 ```
 
 Build the action from the latest code in the foo branch:
 ```
-- name: Bump version and push tags
-  uses: databiosphere/github-actions/actions/action-releaser@foo
+uses: databiosphere/github-actions/actions/action-releaser@foo
 ```
 
 Build the action from a specific version tag:
 ```
-- name: Bump version and push tags
-  uses: databiosphere/github-actions/actions/action-releaser@action-releaser-0.0.0
+uses: databiosphere/github-actions/actions/action-releaser@action-releaser-0.0.0
 ```
 
 ## Adding new actions
