@@ -25,7 +25,7 @@ RUN wget https://github.com/helm/chart-releaser/releases/download/v${RELEASER_VE
 RUN wget https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.tar.gz -O gh.tar.gz && \
     sha256sum gh.tar.gz | grep ${GITHUB_CLI_SHA256} && \
     tar zxvf gh.tar.gz && \
-    mv gh/bin/gh /bin/gh && \
+    mv gh_${GITHUB_CLI_VERSION}_linux_amd64/bin/gh /bin/gh && \
     chmod 0755 /bin/gh
 
 COPY ./contrib/semver ./contrib/semver
