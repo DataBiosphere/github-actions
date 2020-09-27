@@ -101,6 +101,7 @@ bump_chart_version() {
     einfo "$msg"
     yq write "$chart_yaml" 'version' "$new_version"
     git add "$chart_yaml"
+}
 
 package_chart() {
     local chart="$1"
