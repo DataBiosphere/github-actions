@@ -20,7 +20,7 @@ set_vars() {
 }
 
 main() {
-    repo_url=https://${cr_token}@github.com/${owner}/${repo}
+    repo_url=https://${cr_token}@github.com/${github_owner}/${github_repo}
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
 
