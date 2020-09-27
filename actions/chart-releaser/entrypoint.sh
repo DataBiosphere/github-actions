@@ -84,10 +84,11 @@ filter_charts() {
 lookup_changed_charts() {
     #look for changed files in the latest commit
     local changed_files
-    if [[ "$github_pr" == 'none' ]]; then
-        changed_files=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) -- $charts_dir)
+    if [[ $(jq '.pull_request' "$GITHUB_EVENT_PATH") != 'null' ]]; then
+        pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        changed_files=$(gh pr diff $pull_number | sed -n "s/^diff --git a\/\($charts_dir\/[^ ]*\).*/\1/p")
     else
-        changed_files=$(gh pr diff $github_pr | sed -n "s/^diff --git a\/\($charts_dir\/[^ ]*\).*/\1/p")
+        changed_files=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) -- $charts_dir)
     fi
     cut -d '/' -f '2' <<< "$changed_files" | uniq | filter_charts
 }
