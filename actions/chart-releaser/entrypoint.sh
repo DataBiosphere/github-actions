@@ -54,7 +54,7 @@ main() {
 
         for chart in "${changed_charts[@]}"; do
             if [[ -d "$charts_dir/$chart" ]]; then
-                package_chart "$chart"
+                package_chart "$charts_dir/$chart"
             else
                 einfo "Chart '$chart' no longer exists in repo. Skipping it..."
             fi
