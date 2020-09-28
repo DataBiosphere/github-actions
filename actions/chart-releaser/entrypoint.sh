@@ -101,7 +101,7 @@ bump_chart_version() {
     local new_version=$(semver bump $version_bump_level $current_version)
     local msg="Bumping $chart from $current_version to $new_version"
     einfo "$msg"
-    yq write "$chart_yaml" 'version' "$new_version"
+    yq write -i "$chart_yaml" 'version' "$new_version"
     git add "$chart_yaml"
 }
 
