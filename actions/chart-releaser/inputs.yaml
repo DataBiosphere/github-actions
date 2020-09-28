@@ -21,4 +21,4 @@ github_owner:
   default: DataBiosphere
 github_repo:
   description: GitHub repository name
-  default: github-actions
+  default: terra-helm
