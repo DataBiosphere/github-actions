@@ -9,8 +9,6 @@ set_vars() {
     local config_file=$1
     local vars=$(yq r "$1" --printMode p '*')
 
-    edebug "Setting variables from $config_file"
-
     readarray -t varsArr <<< "$vars"
     for var in "${varsArr[@]}"; do
         varCaps="${var^^}"
@@ -19,10 +17,7 @@ set_vars() {
         else
             eval "$var"="${!varCaps}"
         fi
-        edumpvar "$var"
     done
-
-    eok "Variables set"
 }
 
 main() {
