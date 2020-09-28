@@ -21,8 +21,7 @@ set_vars() {
 }
 
 main() {
-    repo_url_cr=https://x-access-token:${cr_token}@github.com/${github_owner}/${github_repo}
-    repo_url_gh=https://x-access-token:${GITHUB_TOKEN}@github.com/${github_owner}/${github_repo}
+    repo_url=https://x-access-token:${cr_token}@github.com/${github_owner}/${github_repo}
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
 
@@ -49,8 +48,8 @@ main() {
             done
 
             git commit --message="bumping chart version(s)"
-            git pull "$repo_url_gh" ${branch}
-            git push "$repo_url_gh" ${branch}
+            git pull "$repo_url" ${branch}
+            git push "$repo_url" ${branch}
         fi
 
         for chart in "${changed_charts[@]}"; do
@@ -140,7 +139,7 @@ release_charts() {
 update_index() {
     einfo 'Updating charts repo index...'
 
-    cr index -o "$github_owner" -r "$github_repo" -c "$repo_url_cr" -t "$cr_token"
+    cr index -o "$github_owner" -r "$github_repo" -c "$repo_url" -t "$cr_token"
 
     gh_pages_worktree=$(mktemp -d)
 
@@ -153,7 +152,7 @@ update_index() {
     git add index.yaml
     git commit --message="Update index.yaml" --signoff
 
-    git push "$repo_url_cr" HEAD:gh-pages
+    git push "$repo_url" HEAD:gh-pages
 
     popd > /dev/null
 }
