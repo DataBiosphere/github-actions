@@ -48,7 +48,8 @@ main() {
             done
 
             git commit --message="bumping chart version(s)"
-            git push "$repo_url" HEAD:${branch}
+            git pull "$repo_url" ${branch}
+            git push "$repo_url" ${branch}
         fi
 
         for chart in "${changed_charts[@]}"; do
