@@ -29,7 +29,7 @@ jobs:
 * **GITHUB_TOKEN** ***(required)*** - Required for permission to tag the repo
 * **ACTIONS_DIR** *(optional)* - Directory where action subdirectories are located (default: `actions`)
 * **VERSION_BUMP_LEVEL** *(optional)* - Which type of bump to use when none explicitly provided (default: `minor`)
-* **VERBOSITY** *(optional)* - Verbosity level, with 1 being silent and 6 being debug (default: `4`)
+* **VERBOSITY** *(optional)* - Verbosity level, with 1 being silent and 6 being debug (default: `5`)
 * **GIT_BRANCH** *(optional)* - Branch to look for changes in (default: `master`)
 * **GIT_USER** *(optional)* - User name to initialize Git with (default: `broadbot`)
 * **GIT_EMAIL** *(optional)* - User email to initialize Git with (default: `broadbot@broadinstitute.org`)
