@@ -1,0 +1,9 @@
+name: "Helm Chart Releaser"
+description: "Build and Release Helm Charts"
+author: "Data Biosphere"
+branding:
+  icon: git-merge
+  color: purple
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

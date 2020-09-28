@@ -1,0 +1,24 @@
+# Input environment variables. All variables below are expected as upper-case.
+cr_token:
+  description: GitHub PAT
+charts_dir:
+  description: Directory where chart subdirectories are located
+  default: charts
+version_bump_level:
+  description: Level of version (major/minor/patch) to bump. Defaults to minor.
+  default: minor
+verbosity:
+  description: Verbosity level, with 1 being silent and 6 being debug
+  default: 6
+git_branch:
+  description: Main git branch to use
+  default: master
+chart_releaser_version:
+  description: Chart Releaser app version
+  default: v1.0.0
+github_owner:
+  description: GitHub repository owner
+  default: broadinstitute
+github_repo:
+  description: GitHub repository name
+  default: terra-helm
