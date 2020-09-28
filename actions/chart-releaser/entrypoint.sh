@@ -3,6 +3,7 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+set -x
 
 # Set variables from their all-caps versions, taking defaults from config file
 set_vars() {
@@ -137,8 +138,6 @@ release_charts() {
 update_index() {
     einfo 'Updating charts repo index...'
 
-    set -x
-
     cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$cr_token"
 
     gh_pages_worktree=$(mktemp -d)
@@ -155,8 +154,6 @@ update_index() {
     git push "$repo_url" HEAD:gh-pages
 
     popd > /dev/null
-
-    set +x
 }
 
 colblk='\033[0;30m' # Black - Regular
@@ -186,10 +183,10 @@ function eerror () { verb_lvl=$err_lvl elog "${colred}ERROR${colrst} --- $@" ;}
 function ecrit ()  { verb_lvl=$crt_lvl elog "${colpur}FATAL${colrst} --- $@" ;}
 function edumpvar () { for var in $@ ; do edebug "$var=${!var}" ; done }
 function elog() {
-        if [ $verbosity -ge $verb_lvl ]; then
-                datestring=$(date +"%Y-%m-%d %H:%M:%S")
-                echo -e "$datestring - $@" 1>&2
-        fi
+    if [ $verbosity -ge $verb_lvl ]; then
+        datestring=$(date +"%Y-%m-%d %H:%M:%S")
+        echo -e "$datestring - $@" 1>&2
+    fi
 }
 
 pushd /releaser > /dev/null

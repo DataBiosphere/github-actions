@@ -9,7 +9,7 @@ version_bump_level:
   default: minor
 verbosity:
   description: Verbosity level, with 1 being silent and 6 being debug
-  default: 4
+  default: 6
 git_branch:
   description: Main git branch to use
   default: master
