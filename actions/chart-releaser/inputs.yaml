@@ -1,5 +1,5 @@
 # Input environment variables. All variables below are expected as upper-case.
-cr_token:
+github_token:
   description: GitHub PAT
 charts_dir:
   description: Directory where chart subdirectories are located

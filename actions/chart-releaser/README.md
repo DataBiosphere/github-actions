@@ -31,14 +31,14 @@ jobs:
       - name: Run chart-releaser
         uses: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/action-releaser:latest
         env:
-          CR_TOKEN: "${{ secrets.CR_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.CR_TOKEN }}"
 ```
 
 #### Options
 
 **Environment Variables**
 
-* **CR_TOKEN** ***(required)*** - Token for bumping versions and running chart-releaser
+* **GITHUB_TOKEN** ***(required)*** - Token for bumping versions and running chart-releaser
 * **CHARTS_DIR** *(optional)* - Directory where chart subdirectories are located (default: `charts`)
 * **VERSION_BUMP_LEVEL** *(optional)* - Which type of bump to use when none explicitly provided (default: `minor`)
 * **VERBOSITY** *(optional)* - Verbosity level, with 1 being silent and 6 being debug (default: `5`)

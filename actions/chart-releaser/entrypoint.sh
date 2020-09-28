@@ -21,7 +21,7 @@ set_vars() {
 }
 
 main() {
-    repo_url=https://x-access-token:${cr_token}@github.com/${github_owner}/${github_repo}
+    repo_url=https://x-access-token:${github_token}@github.com/${github_owner}/${github_repo}
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
     edebug "Working in $repo_root"
@@ -87,7 +87,7 @@ filter_charts() {
         if [[ -f "$file" ]]; then
             echo $chart
         else
-           einfo "WARNING: $file is missing, assuming that '$chart' is not a Helm chart. Skipping."
+           ewarn "$file is missing, assuming that '$chart' is not a Helm chart. Skipping."
         fi
     done
 }
@@ -150,14 +150,14 @@ package_chart() {
 
 release_charts() {
     einfo 'Releasing charts...'
-    cr upload -o "$github_owner" -r "$github_repo" -t "$cr_token" -c "$(git rev-parse HEAD)"
+    cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
     eok 'Charts released'
 }
 
 update_index() {
     einfo 'Updating charts repo index...'
 
-    cr index -o "$github_owner" -r "$github_repo" -c "$repo_url" -t "$cr_token"
+    cr index -o "$github_owner" -r "$github_repo" -c "$repo_url" -t "$github_token"
     gh_pages_worktree=$(mktemp -d)
     git worktree add "$gh_pages_worktree" gh-pages
     cp --force .cr-index/index.yaml "$gh_pages_worktree/index.yaml"
