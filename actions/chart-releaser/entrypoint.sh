@@ -139,7 +139,7 @@ release_charts() {
 update_index() {
     einfo 'Updating charts repo index...'
 
-    cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$cr_token"
+    cr index -o "$github_owner" -r "$github_repo" -c "$repo_url" -t "$cr_token"
 
     gh_pages_worktree=$(mktemp -d)
 
