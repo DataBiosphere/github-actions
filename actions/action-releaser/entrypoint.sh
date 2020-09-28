@@ -117,7 +117,7 @@ dbg_lvl=6
 ## esilent prints output even in silent mode
 function esilent () { verb_lvl=$silent_lvl elog "$@" ;}
 function enotify () { verb_lvl=$ntf_lvl elog "$@" ;}
-function eok ()    { verb_lvl=$ntf_lvl elog "SUCCESS - $@" ;}
+function eok ()    { verb_lvl=$ntf_lvl elog "${colgrn}SUCCESS${colrst} - $@" ;}
 function ewarn ()  { verb_lvl=$wrn_lvl elog "${colylw}WARNING${colrst} - $@" ;}
 function einfo ()  { verb_lvl=$inf_lvl elog "${colblk}INFO${colrst} ---- $@" ;}
 function edebug () { verb_lvl=$dbg_lvl elog "${colgrn}DEBUG${colrst} --- $@" ;}
