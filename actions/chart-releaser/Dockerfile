@@ -6,15 +6,12 @@ ARG YQ_SHA256=0b0700cfee1d642a0a19f8f9261b2f0a11b7174ef8bcd39e9ed334d9519f0125
 ARG RELEASER_VERSION=1.0.0
 ARG RELEASER_SHA256=c2851f6268f7432450dce398d938083d002752e894a0a3ae6e9d4740e98a61c2
 
-ARG GITHUB_CLI_VERSION=1.0.0
-ARG GITHUB_CLI_SHA256=96575c888d979a6717928fe53bbd75d1acd52a6eec32aa41202d15919475ebfa
-
 ARG HELM_VERSION=v3.2.1
 ARG HELM_LOCATION=https://get.helm.sh
 ARG HELM_FILENAME=helm-v3.2.1-linux-amd64.tar.gz
 ARG HELM_SHA256=018f9908cb950701a5d59e757653a790c66d8eda288625dbb185354ca6f41f6b
 
-RUN apk --update add --no-cache ca-certificates git bash jq moreutils
+RUN apk --update add --no-cache ca-certificates git bash jq moreutils curl
 
 RUN wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 && \
     sha256sum yq_linux_amd64 | grep ${YQ_SHA256} && \
@@ -26,12 +23,6 @@ RUN wget https://github.com/helm/chart-releaser/releases/download/v${RELEASER_VE
     tar zxvf cr.tar.gz && \
     mv cr /bin/cr && \
     chmod 0755 /bin/cr
-
-RUN wget https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.tar.gz -O gh.tar.gz && \
-    sha256sum gh.tar.gz | grep ${GITHUB_CLI_SHA256} && \
-    tar zxvf gh.tar.gz && \
-    mv gh_${GITHUB_CLI_VERSION}_linux_amd64/bin/gh /bin/gh && \
-    chmod 0755 /bin/gh
 
 RUN wget ${HELM_LOCATION}/${HELM_FILENAME} && \
     echo Verifying ${HELM_FILENAME}... && \

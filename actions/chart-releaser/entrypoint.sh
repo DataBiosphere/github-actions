@@ -22,6 +22,8 @@ set_vars() {
 
 main() {
     repo_url=https://x-access-token:${github_token}@github.com/${github_owner}/${github_repo}
+    charts_repo_url=https://${github_owner}.github.io/${github_repo}
+ 
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
     edebug "Working in $repo_root"
@@ -60,7 +62,7 @@ main() {
 
         for chart in "${changed_charts[@]}"; do
             if [[ -d "$charts_dir/$chart" ]]; then
-                package_chart "$charts_dir/$chart"
+                package_chart "$chart"
             else
                 einfo "Chart '$chart' no longer exists in repo. Skipping it..."
             fi
@@ -79,32 +81,19 @@ main() {
     eok 'All done!'
 }
 
-filter_charts() {
-    edebug "Filtering out non-chart directories"
-    while read chart; do
-        [[ ! -d "$charts_dir/$chart" ]] && continue
-        local file="$charts_dir/$chart/Chart.yaml"
-        if [[ -f "$file" ]]; then
-            echo $chart
-        else
-           ewarn "$file is missing, assuming that '$chart' is not a Helm chart. Skipping."
-        fi
-    done
-}
-
 lookup_changed_charts() {
     # Look for changed files in the latest commit or PR
     local changed_files
     if [[ $(jq '.pull_request' "$GITHUB_EVENT_PATH") != 'null' ]]; then
         einfo "In a PR. Looking for changed files in the whole PR"
         pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-        changed_files=$(gh pr diff $pull_number | sed -n "s/^diff --git a\/\($charts_dir\/[^ ]*\).*/\1/p")
+        changed_files=$(curl -s https://api.github.com/repos/$github_owner/$github_repo/pulls/$pull_number/files | jq -r '.[].filename' | grep "^$charts_dir/")
     else
         einfo "Not in a PR. Looking for changed files in latest commit"
         changed_files=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) -- $charts_dir)
     fi
     edumpvar changed_files
-    cut -d '/' -f '2' <<< "$changed_files" | uniq | filter_charts
+    cut -d '/' -f '2' <<< "$changed_files" | uniq
 }
 
 bump_chart_version() {
@@ -140,9 +129,9 @@ package_chart() {
             einfo "Not on $git_branch branch. Releasing '$rel_version' version..."
         fi
 
-        helm package "$chart" --version "$rel_version" --destination .cr-release-packages --dependency-update
+        helm package "$charts_dir/$chart" --version "$rel_version" --destination .cr-release-packages --dependency-update
     else
-        helm package "$chart" --destination .cr-release-packages --dependency-update
+        helm package "$charts_dir/$chart" --destination .cr-release-packages --dependency-update
     fi
 
     eok "Chart '$chart' packaged"
@@ -157,7 +146,7 @@ release_charts() {
 update_index() {
     einfo 'Updating charts repo index...'
 
-    cr index -o "$github_owner" -r "$github_repo" -c "$repo_url" -t "$github_token"
+    cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$github_token"
     gh_pages_worktree=$(mktemp -d)
     git worktree add "$gh_pages_worktree" gh-pages
     cp --force .cr-index/index.yaml "$gh_pages_worktree/index.yaml"
