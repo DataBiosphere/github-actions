@@ -18,7 +18,7 @@ chart_releaser_version:
   default: v1.0.0
 github_owner:
   description: GitHub repository owner
-  default: DataBiosphere
+  default: broadinstitute
 github_repo:
   description: GitHub repository name
   default: terra-helm
