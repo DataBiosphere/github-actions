@@ -40,7 +40,7 @@ main() {
         if [[ "$branch" == "$git_branch" ]]; then
             einfo "Bumping chart versions"
             for chart in "${changed_charts[@]}"; do
-                if [[ -d "$chart" ]]; then
+                if [[ -d "$charts_dir/$chart" ]]; then
                     bump_chart_version "$chart"
                 else
                     einfo "Chart '$chart' no longer exists in repo. Skipping it..."
@@ -52,7 +52,7 @@ main() {
         fi
 
         for chart in "${changed_charts[@]}"; do
-            if [[ -d "$chart" ]]; then
+            if [[ -d "$charts_dir/$chart" ]]; then
                 package_chart "$chart"
             else
                 einfo "Chart '$chart' no longer exists in repo. Skipping it..."
