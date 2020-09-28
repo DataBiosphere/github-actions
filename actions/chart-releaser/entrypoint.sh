@@ -72,8 +72,8 @@ main() {
 
 filter_charts() {
     while read chart; do
-        [[ ! -d "$chart" ]] && continue
-        local file="$chart/Chart.yaml"
+        [[ ! -d "$charts_dir/$chart" ]] && continue
+        local file="$charts_dir/$chart/Chart.yaml"
         if [[ -f "$file" ]]; then
             echo $chart
         else
