@@ -2,6 +2,16 @@
 
 A Github Action to automatically verison and release Helm charts
 
+### Workflow
+* Add this action to your repo
+* Commit some changes
+* Either push to master or open a PR
+* On push (or merge) to `master`, the action will:
+  * Get changed chart(s)
+  * Bump chart version(s) with minor version unless the commit message contains `#major` or `#patch`
+  * Tag version bump commit with new chart version(s)
+  * Push version bump commit and tag(s)
+
 ### Usage
 ```Dockerfile
 name: Release Charts
