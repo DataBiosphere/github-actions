@@ -100,6 +100,17 @@ bump_chart_version() {
     local chart="$1"
     local chart_yaml="$charts_dir/$chart/Chart.yaml"
     local current_version=$(yq read "$chart_yaml" version)
+
+    # Check current commit message for version bump level override
+    local last_msg=$(git log -1 --pretty='%B')
+    edumpvar last_msg
+    case "$last_msg" in
+        *#major* ) version_bump_level="major";;
+        *#minor* ) version_bump_level="minor";;
+        *#patch* ) version_bump_level="patch";;
+        * ) einfo "No bump level override found.";;
+    esac
+
     local new_version=$(semver bump $version_bump_level $current_version)
     local msg="Bumping $chart from $current_version to $new_version"
 
