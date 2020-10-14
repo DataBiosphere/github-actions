@@ -3,7 +3,7 @@ This repository is meant to house containerized Data Biosphere-adjacent GitHub a
 
 ## Build process
 The [action-releaser action](https://github.com/DataBiosphere/github-actions/tree/master/actions/action-releaser), also hosted in this repository, is used in the [release workflow](https://github.com/DataBiosphere/github-actions/blob/master/.github/workflows/release.yml) to bump the version tags of any actions when changes to them are merged to master.
-A Google Cloud Build trigger is set up to look for those tags and build the action containers as defined in the [`cloudbuild.yaml` config file](https://github.com/DataBiosphere/github-actions/blob/master/cloudbuild.yaml).
+A [Google Cloud Build trigger](https://console.cloud.google.com/cloud-build/triggers/edit/5414cabd-9785-4bb8-9561-669d2a8264c8?project=dsp-artifact-registry) is set up to look for those tags and build the action containers as defined in the [`cloudbuild.yaml` config file](https://github.com/DataBiosphere/github-actions/blob/master/cloudbuild.yaml).
 The build publishes the images to the public github actions repo, tagged with the versions, where they can be [pulled by GH action workflows](#point-to-image).
 
 ## Using actions defined in this repo
