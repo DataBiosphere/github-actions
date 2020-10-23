@@ -70,7 +70,7 @@ main() {
 
         sleep 1
         release_charts
-        sleep 1
+        sleep 3
         update_index
     else
         einfo "Nothing to do. No chart changes detected."
