@@ -6,7 +6,7 @@ inputs:
     required: true
 runs:
   using: 'docker'
-  image: 'mikefarah/yq:3'
+  image: 'docker://mikefarah/yq:3'
   args:
   - sh
   - -c
