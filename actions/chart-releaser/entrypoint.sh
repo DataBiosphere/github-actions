@@ -4,6 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+set -x
+
 # Set variables from their all-caps versions, taking defaults from config file
 set_vars() {
     local config_file=$1
@@ -158,6 +160,9 @@ update_index() {
     einfo 'Updating charts repo index...'
 
     cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$github_token"
+
+    cat .cr-index/index.yaml
+
     gh_pages_worktree=$(mktemp -d)
     git worktree add "$gh_pages_worktree" gh-pages
     cp --force .cr-index/index.yaml "$gh_pages_worktree/index.yaml"
