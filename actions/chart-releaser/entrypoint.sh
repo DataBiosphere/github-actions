@@ -152,16 +152,20 @@ package_chart() {
 
 release_charts() {
     einfo 'Releasing charts...'
+
+    ls -al .cr-release-packages
+
     cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
+
     eok 'Charts released'
 }
 
 update_index() {
     einfo 'Updating charts repo index...'
 
-    cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$github_token"
+    ls -al .cr-release-packages
 
-    cat .cr-index/index.yaml
+    cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$github_token"
 
     gh_pages_worktree=$(mktemp -d)
     git worktree add "$gh_pages_worktree" gh-pages
