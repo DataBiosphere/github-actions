@@ -39,12 +39,13 @@ main() {
                     local current_semver=${current_tag#"$action-"}
                     local new_semver=$(semver bump $version_bump_level $current_semver)
                 fi
+                set_action_version "$action" "$new_semver"
                 tag_action "$action" "$new_semver"
             else
                 ewarn "Action '$action' no longer exists in repo. Skipping it..."
             fi
         done
-        push_tags
+        commit_and_push_changes
     else
         einfo "Nothing to do. No action changes detected."
     fi
@@ -84,6 +85,14 @@ lookup_changed_actions() {
     cut -d '/' -f '2' <<< "$changed_files" | uniq | filter_actions
 }
 
+set_action_version() {
+    local action="$1"
+    local version="$2"
+
+    einfo "Updating action.yml of $action to point to the '$version' tag"
+    yq w -i "actions/$action/action.yml" 'runs.image' "$docker_repo/$action:$version"
+}
+
 tag_action() {
     local action="$1"
     local version="$2"
@@ -93,9 +102,11 @@ tag_action() {
     git tag "$tag"
 }
 
-push_tags() {
-    einfo 'Pushing tags...'
-    git push --tags
+commit_and_push_changes() {
+    einfo 'Pushing changes and tags...'
+    git add -u
+    git commit -am "update version(s)"
+    git push && git push --tags
 }
 
 colblk='\033[0;30m' # Black - Regular
