@@ -27,4 +27,4 @@ github_repo:
   default: github-actions
 docker_repo:
   description: Docker container repository
-  default: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/
+  default: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public
