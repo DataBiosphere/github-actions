@@ -24,6 +24,10 @@ inputs:
     required: false
     description: "Milliseconds to wait before giving up trying to get a lock. Never gives up if set to 0."
     default: '2000'
+# Uncomment for development
+#runs:
+#  using: "docker"
+#  image: "Dockerfile"
 runs:
   using: "docker"
-  image: "Dockerfile"
+  image: "docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/locker:0.0.0"
