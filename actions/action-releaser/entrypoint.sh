@@ -22,8 +22,9 @@ set_vars() {
 main() {
     git_init
 
-    git clone --single-branch --branch "$git_branch" "https://$github_token@github.com/$github_owner/$github_repo"
-    pushd "$github_repo" > /dev/null
+    git clone --single-branch --branch "$git_branch" "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+    local repo_name=$(echo "$GITHUB_REPOSITORY" | awk -F '/' '{print $2}')
+    pushd "$repo_name" > /dev/null
 
     einfo "Discovering changed actions ..."
     local changed_actions=()
@@ -54,8 +55,8 @@ main() {
 }
 
 git_init() {
-    git config --global user.name "$git_user"
-    git config --global user.email "$git_email"
+    git config --global user.name "$GITHUB_ACTOR"
+    git config --global user.email "$GITHUB_ACTOR@noreply.github.com"
 }
 
 lookup_latest_tag() {
@@ -106,7 +107,8 @@ commit_and_push_changes() {
     einfo 'Pushing changes and tags...'
     git add -u
     git commit -am "update version(s)"
-    git push && git push --tags
+    git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+    git push --tags "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 }
 
 colblk='\033[0;30m' # Black - Regular
