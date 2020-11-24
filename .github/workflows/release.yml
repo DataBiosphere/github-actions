@@ -12,4 +12,4 @@ jobs:
     - name: Bump version and push tags
       uses: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/action-releaser:latest
       env:
-        GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
