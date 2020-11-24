@@ -4,25 +4,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# Set variables from their all-caps versions, taking defaults from config file
-set_vars() {
-    local config_file=$1
-    local vars=$(yq r "$1" --printMode p '*')
-    readarray -t varsArr <<< "$vars"
-    for var in "${varsArr[@]}"; do
-        varCaps="${var^^}"
-        if [ -z ${!varCaps+x} ]; then
-            eval "$var"=$(yq r "$config_file" "$var.default")
-        else
-            eval "$var"="${!varCaps}"
-        fi
-    done
-}
-
 main() {
     git_init
 
-    git clone --single-branch --branch "$git_branch" "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+    git clone --single-branch --branch "$INPUT_GIT_BRANCH" "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
     local repo_name=$(echo "$GITHUB_REPOSITORY" | awk -F '/' '{print $2}')
     pushd "$repo_name" > /dev/null
 
@@ -32,13 +17,13 @@ main() {
 
     if [[ -n "${changed_actions[*]}" ]]; then
         for action in "${changed_actions[@]}"; do
-            if [[ -d "$actions_dir/$action" ]]; then
+            if [[ -d "$INPUT_ACTIONS_DIR/$action" ]]; then
                 local current_tag=$(lookup_latest_tag $action)
                 if [[ "$current_tag" == '' ]]; then
                     local new_semver="0.0.0"
                 else
                     local current_semver=${current_tag#"$action-"}
-                    local new_semver=$(semver bump $version_bump_level $current_semver)
+                    local new_semver=$(semver bump $INPUT_VERSION_BUMP_LEVEL $current_semver)
                 fi
                 set_action_version "$action" "$new_semver"
                 tag_action "$action" "$new_semver"
@@ -69,12 +54,13 @@ lookup_latest_tag() {
 
 filter_actions() {
     while read action; do
-        [[ ! -d "$actions_dir/$action" ]] && continue
-        local file="$actions_dir/$action/action.yml"
-        if [[ -f "$file" ]]; then
-            echo $action
+        [[ ! -d "$INPUT_ACTIONS_DIR/$action" ]] && continue
+        local action_yml="$INPUT_ACTIONS_DIR/$action/action.yml"
+        local dockerfile="$INPUT_ACTIONS_DIR/$action/Dockerfile"
+        if [[ -f "$action_yml" && -f "$dockerfile" ]]; then
+            echo "$action"
         else
-            ewarn "$file is missing, assuming that '$action' is not a GitHub action. Skipping."
+            ewarn "$action_yml or $dockerfile is missing. Skipping."
         fi
     done
 }
@@ -82,7 +68,7 @@ filter_actions() {
 lookup_changed_actions() {
     #look for changed files in the latest commit
     local changed_files
-    changed_files=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD) -- $actions_dir)
+    changed_files=$(git diff-tree --no-commit-id --name-only -r "$(git rev-parse HEAD)" -- $INPUT_ACTIONS_DIR)
     cut -d '/' -f '2' <<< "$changed_files" | uniq | filter_actions
 }
 
@@ -91,7 +77,7 @@ set_action_version() {
     local version="$2"
 
     einfo "Updating action.yml of $action to point to the '$version' tag"
-    yq w -i "actions/$action/action.yml" 'runs.image' "$docker_repo/$action:$version"
+    yq w -i "actions/$action/action.yml" 'runs.image' "$INPUT_DOCKER_REPO/$action:$version"
 }
 
 tag_action() {
@@ -138,13 +124,13 @@ function eerror () { verb_lvl=$err_lvl elog "${colred}ERROR${colrst} --- $@" ;}
 function ecrit ()  { verb_lvl=$crt_lvl elog "${colpur}FATAL${colrst} --- $@" ;}
 function edumpvar () { for var in $@ ; do edebug "$var=${!var}" ; done }
 function elog() {
-        if [ $verbosity -ge $verb_lvl ]; then
+        if [ $INPUT_VERBOSITY -ge $verb_lvl ]; then
                 datestring=$(date +"%Y-%m-%d %H:%M:%S")
                 echo -e "$datestring - $@" 1>&2
         fi
 }
 
 pushd /releaser > /dev/null
-set_vars "inputs.yaml"
+set_vars
 main
 popd > /dev/null
