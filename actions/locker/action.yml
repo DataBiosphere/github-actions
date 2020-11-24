@@ -2,20 +2,28 @@ name: "Locker"
 description: "Throttle concurrent actions by locking a Google CLoud Storage file"
 author: "Greg Malkov"
 inputs:
+  bucket:
+    required: true
+    description: "GCS Bucket to use for locking"
   lock-name:
     required: true
     description: "Unique name for the lock. All workflows using the same lock name will share that lock"
-  poll-interval-seconds:
+  operation:
     required: false
-    description: "Number of seconds to wait in between lock checks (defaults to 60)"
-  continue-after-seconds:
+    description: "Locking operation to perform. Only 'lock' and 'unlock' are supported."
+    default: 'lock'
+  lock-timeout-ms:
     required: false
-    description: "Maximum number of seconds to wait before moving forward (unbound by default). Mutually exclusive with abort-after-seconds"
-  abort-after-seconds:
+    description: "Milliseconds to wait before giving up trying to get a lock. Never gives up if set to 0."
+    default: '0'
+  continue-on-lock-timeout:
     required: false
-    description: "Maximum number of seconds to wait before failing the step (unbound by default). Mutually exclusive with continue-after-seconds"
+    description: "Whether to continue (without failing) when the lock timeout is exceeded"
+    default: 'false'
+  unlock-timeout-ms:
+    required: false
+    description: "Milliseconds to wait before giving up trying to get a lock. Never gives up if set to 0."
+    default: '2000'
 runs:
   using: "docker"
   image: "Dockerfile"
-  env:
-    CLOUDSDK_CONFIG: '/github/workspace/service_account.json'
