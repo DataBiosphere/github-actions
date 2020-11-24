@@ -1,0 +1,57 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Locker Docker Debug" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="imageTag" value="locker" />
+        <option name="buildCliOptions" value="--target debug" />
+        <option name="command" value="" />
+        <option name="containerName" value="locker" />
+        <option name="entrypoint" value="" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="INPUT_BUCKET" />
+              <option name="value" value="broad-dsp-locker-action" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="INPUT_LOCK_NAME" />
+              <option name="value" value="test" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="INPUT_OPERATION" />
+              <option name="value" value="unlock" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DLV_LISTEN_LOCKER" />
+              <option name="value" value=":50000" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="INPUT_LOCK_TIMEOUT_MS" />
+              <option name="value" value="2000" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="50000" />
+              <option name="hostPort" value="50000" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="" />
+        <option name="sourceFilePath" value="actions/locker/Dockerfile" />
+        <option name="volumeBindings">
+          <list>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/gcloud/application_default_credentials.json" />
+              <option name="hostPath" value="$USER_HOME$/.config/gcloud/application_default_credentials.json" />
+              <option name="readOnly" value="true" />
+            </DockerVolumeBindingImpl>
+          </list>
+        </option>
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
