@@ -12,4 +12,4 @@ jobs:
     - name: Bump version and push tags
       uses: databiosphere/github-actions/actions/action-releaser@gm-release-refactor
       env:
-        GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
