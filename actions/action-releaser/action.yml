@@ -16,7 +16,7 @@ inputs:
   verbosity:
     required: false
     description: Verbosity level, with 1 being silent and 6 being debug
-    default: '6'
+    default: '5'
   git_branch:
     required: false
     description: Git branch to use
