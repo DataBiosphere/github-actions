@@ -1,0 +1,33 @@
+name: "Locker"
+description: "Throttle concurrent actions by locking a Google CLoud Storage file"
+author: "Greg Malkov"
+inputs:
+  bucket:
+    required: true
+    description: "GCS Bucket to use for locking"
+  lock_name:
+    required: true
+    description: "Unique name for the lock. All workflows using the same lock name will share that lock"
+  operation:
+    required: false
+    description: "Locking operation to perform. Only 'lock' and 'unlock' are supported."
+    default: 'lock'
+  lock_timeout_ms:
+    required: false
+    description: "Milliseconds to wait before giving up trying to get a lock. Never gives up if set to 0."
+    default: '0'
+  continue_on_lock_timeout:
+    required: false
+    description: "Whether to continue (without failing) when the lock timeout is exceeded"
+    default: 'false'
+  unlock_timeout_ms:
+    required: false
+    description: "Milliseconds to wait before giving up trying to get a lock. Never gives up if set to 0."
+    default: '2000'
+# Uncomment for development
+#runs:
+#  using: "docker"
+#  image: "Dockerfile"
+runs:
+  using: "docker"
+  image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/locker:0.7.0
