@@ -16,7 +16,7 @@ jobs:
     - name: Bump version and push tags
       uses: databiosphere/github-actions/actions/action-releaser@gm-broadbot
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
 #    - name: Notify Slack on failure
 #      if: failure()
 #      uses: broadinstitute/action-slack@v2.7.0
