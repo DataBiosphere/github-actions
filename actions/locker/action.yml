@@ -30,4 +30,4 @@ inputs:
 #  image: "Dockerfile"
 runs:
   using: "docker"
-  image: "docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/locker:0.0.0"
+  image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/locker:0.5.0
