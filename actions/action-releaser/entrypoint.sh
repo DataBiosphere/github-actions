@@ -52,8 +52,8 @@ main() {
 }
 
 git_init() {
-    git config --global user.name "$GITHUB_ACTOR"
-    git config --global user.email "$GITHUB_ACTOR@noreply.github.com"
+    git config --global user.name "$INPUT_GITHUB_USER"
+    git config --global user.email "$INPUT_GITHUB_USER@noreply.github.com"
 }
 
 lookup_latest_tag() {
@@ -104,12 +104,12 @@ tag_action() {
 
 push_changes() {
     einfo 'Pushing changes...'
-    git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+    git push "https://$INPUT_GITHUB_USER:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 }
 
 push_tags() {
     einfo 'Pushing tags...'
-    git push --tags "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+    git push --tags "https://$INPUT_GITHUB_USER:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 }
 
 colblk='\033[0;30m' # Black - Regular

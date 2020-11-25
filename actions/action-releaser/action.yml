@@ -25,6 +25,10 @@ inputs:
     required: false
     description: Docker container repository
     default: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public
+  github_user:
+    required: false
+    description: GitHub user that will be used to bump versions. The GITHUB_TOKEN env var that is passed in should be a PAT belonging to this user.
+    default: broadbot
 runs:
   using: 'docker'
   image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/action-releaser:0.3.0

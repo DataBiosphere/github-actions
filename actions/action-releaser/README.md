@@ -32,6 +32,7 @@ jobs:
 | `verbosity` | '5' | Verbosity level, with 1 being silent and 6 being debug |
 | `git_branch` | master | Git branch to use |
 | `docker_repo` | docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public | Docker container repository |
+| `github_user` | broadbot | GitHub user that will be used to bump versions. The GITHUB_TOKEN env var that is passed in should be a PAT belonging to this user. |
 
 #### Expected Environment Variables
 
