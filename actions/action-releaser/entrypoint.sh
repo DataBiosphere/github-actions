@@ -89,7 +89,6 @@ set_action_version() {
 
     local msg="Updating action.yml of $action to point to the '$version' tag"
     einfo "$msg"
-    git add -u
     git commit -am "$msg"
     yq w -i "actions/$action/action.yml" 'runs.image' "$INPUT_DOCKER_REPO/$action:$version"
 }
