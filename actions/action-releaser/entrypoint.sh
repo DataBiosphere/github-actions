@@ -131,6 +131,5 @@ function elog() {
 }
 
 pushd /releaser > /dev/null
-set_vars
 main
 popd > /dev/null
