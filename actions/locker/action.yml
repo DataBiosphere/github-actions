@@ -5,22 +5,22 @@ inputs:
   bucket:
     required: true
     description: "GCS Bucket to use for locking"
-  lock-name:
+  lock_name:
     required: true
     description: "Unique name for the lock. All workflows using the same lock name will share that lock"
   operation:
     required: false
     description: "Locking operation to perform. Only 'lock' and 'unlock' are supported."
     default: 'lock'
-  lock-timeout-ms:
+  lock_timeout_ms:
     required: false
     description: "Milliseconds to wait before giving up trying to get a lock. Never gives up if set to 0."
     default: '0'
-  continue-on-lock-timeout:
+  continue_on_lock_timeout:
     required: false
     description: "Whether to continue (without failing) when the lock timeout is exceeded"
     default: 'false'
-  unlock-timeout-ms:
+  unlock_timeout_ms:
     required: false
     description: "Milliseconds to wait before giving up trying to get a lock. Never gives up if set to 0."
     default: '2000'
