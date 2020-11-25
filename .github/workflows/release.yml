@@ -10,6 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Bump version and push tags
-      uses: databiosphere/github-actions/actions/action-releaser@gm-release-refactor
+      uses: databiosphere/github-actions/actions/action-releaser@action-releaser-0.3.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Notify Slack on failure
+      if: failure()
+      uses: broadinstitute/action-slack@v2.7.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        status: ${{ job.status }}
+        username: "github-actions release"
+        text: "GitHub Action release failed!"
