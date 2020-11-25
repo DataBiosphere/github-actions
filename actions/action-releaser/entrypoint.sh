@@ -76,7 +76,10 @@ set_action_version() {
     local action="$1"
     local version="$2"
 
-    einfo "Updating action.yml of $action to point to the '$version' tag"
+    local msg="Updating action.yml of $action to point to the '$version' tag"
+    einfo "$msg"
+    git add -u
+    git commit -am "$msg"
     yq w -i "actions/$action/action.yml" 'runs.image' "$INPUT_DOCKER_REPO/$action:$version"
 }
 
@@ -91,8 +94,6 @@ tag_action() {
 
 commit_and_push_changes() {
     einfo 'Pushing changes and tags...'
-    git add -u
-    git commit -am "update version(s)"
     git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
     git push --tags "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 }
