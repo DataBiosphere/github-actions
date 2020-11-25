@@ -20,7 +20,7 @@ func main() {
 	log.Print("Reading environment variables")
 	bucket := getEnv("INPUT_BUCKET", "")
 	lockName := getEnv("INPUT_LOCK_NAME", "")
-	operation := getEnv("INPUT_OPERATION", "")
+	operation := getEnv("INPUT_OPERATION", "lock")
 	continueOnLockTimeout, err := strconv.ParseBool(getEnv("INPUT_CONTINUE_ON_LOCK_TIMEOUT", "false"))
 	if err != nil {log.Fatal(err)}
 	lockTimeout, err := strconv.Atoi(getEnv("INPUT_LOCK_TIMEOUT_MS", "0"))
