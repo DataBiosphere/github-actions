@@ -14,16 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Bump version and push tags
-      uses: databiosphere/github-actions/actions/action-releaser@gm-broadbot
+      uses: databiosphere/github-actions/actions/action-releaser@action-releaser-0.6.0
       env:
         GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
-#    - name: Notify Slack on failure
-#      if: failure()
-#      uses: broadinstitute/action-slack@v2.7.0
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
-#        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-#      with:
-#        status: ${{ job.status }}
-#        username: "github-actions release"
-#        text: "GitHub Action release failed!"
+    - name: Notify Slack on failure
+      if: failure()
+      uses: broadinstitute/action-slack@v2.7.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.BROADBOT_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        status: ${{ job.status }}
+        username: "github-actions release"
+        text: "GitHub Action release failed!"
