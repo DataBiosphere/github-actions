@@ -20,6 +20,8 @@ jobs:
     steps:
     - name: Bump versions and tags
       uses: databiosphere/github-actions/actions/action-releaser@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 #### Inputs
@@ -33,7 +35,9 @@ jobs:
 
 #### Expected Environment Variables
 
-This action expects the following environment variables to be set. Github workflows should pass them automatically, but if this container is run outside of the GH Actions context, they will need to be passed in manually.
+This action expects the following environment variables to be set:
 - GITHUB_TOKEN
+
+Github workflows should pass these variables automatically, but if this container is run outside of the GH Actions context, they will need to be passed in manually:
 - GITHUB_REPOSITORY
 - GITHUB_ACTOR
