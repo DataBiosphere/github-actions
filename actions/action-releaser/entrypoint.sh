@@ -16,6 +16,7 @@ main() {
     readarray -t changed_actions <<< "$(lookup_changed_actions)"
 
     if [[ -n "${changed_actions[*]}" ]]; then
+        local changes=false
         for action in "${changed_actions[@]}"; do
             if [[ -d "$INPUT_ACTIONS_DIR/$action" ]]; then
                 local current_tag=$(lookup_latest_tag $action)
@@ -25,13 +26,24 @@ main() {
                     local current_semver=${current_tag#"$action-"}
                     local new_semver=$(semver bump $INPUT_VERSION_BUMP_LEVEL $current_semver)
                 fi
-                set_action_version "$action" "$new_semver"
+                local dockerfile="$INPUT_ACTIONS_DIR/$action/Dockerfile"
+                # Only bump image version on containerized actions
+                if [[ -f "$dockerfile" ]]; then
+                    set_action_version "$action" "$new_semver"
+                    changes=true
+                fi
                 tag_action "$action" "$new_semver"
             else
                 ewarn "Action '$action' no longer exists in repo. Skipping it..."
             fi
         done
-        commit_and_push_changes
+        # Only commit if there are file changes
+        if $changes; then
+            push_changes
+        else
+            einfo "No action.yml updates, not pushing changes"
+        fi
+        push_tags
     else
         einfo "Nothing to do. No action changes detected."
     fi
@@ -56,11 +68,10 @@ filter_actions() {
     while read action; do
         [[ ! -d "$INPUT_ACTIONS_DIR/$action" ]] && continue
         local action_yml="$INPUT_ACTIONS_DIR/$action/action.yml"
-        local dockerfile="$INPUT_ACTIONS_DIR/$action/Dockerfile"
-        if [[ -f "$action_yml" && -f "$dockerfile" ]]; then
+        if [[ -f "$action_yml" ]]; then
             echo "$action"
         else
-            ewarn "$action_yml or $dockerfile is missing. Skipping."
+            ewarn "$action_yml is missing. Skipping."
         fi
     done
 }
@@ -92,9 +103,13 @@ tag_action() {
     git tag "$tag"
 }
 
-commit_and_push_changes() {
-    einfo 'Pushing changes and tags...'
+push_changes() {
+    einfo 'Pushing changes...'
     git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+}
+
+push_tags() {
+    einfo 'Pushing tags...'
     git push --tags "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 }
 

@@ -11,7 +11,7 @@ inputs:
     default: actions
   version_bump_level:
     required: false
-    description: Level of version (major/minor/patch) to bump. Defaults to minor.
+    description: Level of version (major/minor/patch) to bump
     default: minor
   verbosity:
     required: false
