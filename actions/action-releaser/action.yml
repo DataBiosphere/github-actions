@@ -1,9 +1,30 @@
-name: "GiutHub Action Releaser"
+name: "GitHub Action Releaser"
 description: "Build and Release GitHub Actions"
 author: "Data Biosphere"
 branding:
   icon: git-merge
   color: purple
+inputs:
+  actions_dir:
+    required: false
+    description: Directory where action subdirectories are located
+    default: actions
+  version_bump_level:
+    required: false
+    description: Level of version (major/minor/patch) to bump
+    default: minor
+  verbosity:
+    required: false
+    description: Verbosity level, with 1 being silent and 6 being debug
+    default: '5'
+  git_branch:
+    required: false
+    description: Git branch to use
+    default: master
+  docker_repo:
+    required: false
+    description: Docker container repository
+    default: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public
 runs:
   using: 'docker'
   image: 'Dockerfile'
