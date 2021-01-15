@@ -23,7 +23,7 @@ set_vars() {
 main() {
     repo_url=https://x-access-token:${github_token}@github.com/${github_owner}/${github_repo}
     charts_repo_url=https://${github_owner}.github.io/${github_repo}
- 
+
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
     edebug "Working in $repo_root"
@@ -34,7 +34,7 @@ main() {
     edumpvar changed_charts
 
     if [[ -n "${changed_charts[*]}" ]]; then
-        
+
         edebug "Configuring chart releaser folders"
         rm -rf .cr-release-packages
         mkdir -p .cr-release-packages
@@ -133,10 +133,10 @@ package_chart() {
         edumpvar version timestamp sha
         if [[ $(jq '.pull_request' "$GITHUB_EVENT_PATH") != 'null' ]]; then
             pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-            rel_version="$version-$pull_number.$timestamp.$sha"
+            rel_version="$version-$pull_number.$timestamp.sha-$sha"
             einfo "In a PR. Releasing '$rel_version' version..."
         else
-            rel_version="$version-$branch.$timestamp.$sha"
+            rel_version="$version-$branch.$timestamp.sha-$sha"
             einfo "Not on $git_branch branch. Releasing '$rel_version' version..."
         fi
 
