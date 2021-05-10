@@ -1,0 +1,12 @@
+name: "Terra Kubernetes linter"
+description: "Runs linter on Terra manifests"
+author: "Eno"
+inputs:
+  manifests_dir:
+    required: true
+    description: Directory where terra manifests are located
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.manifests_dir }}
