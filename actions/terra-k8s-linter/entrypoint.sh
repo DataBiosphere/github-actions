@@ -1,11 +1,12 @@
 #!/bin/sh
+set -x
 
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 <manifests_dir> $1 <custom_policies_dir> $2 <ignored_policies_dir> " &2
   exit 1
 fi
 
-echo "test"
+echo "test5"
 pwd
 
 policy_args=""
