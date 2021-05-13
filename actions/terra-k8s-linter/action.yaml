@@ -16,6 +16,6 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.manifest_dir }}
+    - ${{ inputs.manifests_dir }}
     - ${{ inputs.custom_policies_dir }}
     - ${{ inputs.ignore_default_policy }}
