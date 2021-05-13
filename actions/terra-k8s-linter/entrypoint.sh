@@ -5,28 +5,27 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
+pwd
+
 policy_args=""
 
 MANIFESTS_DIR="$1"
 CUSTOM_POLICIES_DIR="$2"
 IGNORE_DEFAULT_POLICY="$3"
-cmd="conftest test ${MANIFESTS_DIR}"
 
-if [ $IGNORE_DEFAULT_POLICY ]
-then
-  cmd+=" -i /policy"
-else
-  policy_args+="-p /policy"
-fi
+# if [ $IGNORE_DEFAULT_POLICY ]
+# then
+#   cmd+=" -i /policy"
+# fi
 
-if [ -n $CUSTOM_POLICIES_DIR ]
-then
-  if [ ${#policy_args} -gt 0 ]
-  then
-    policy_args+=",$CUSTOM_POLICIES_DIR"
-  else
-    policy_args+="-p $CUSTOM_POLICIES_DIR"
-  fi
-fi
+# if [ -n $CUSTOM_POLICIES_DIR ]
+# then
+#   if [ ${#policy_args} -gt 0 ]
+#   then
+#     policy_args+=",$CUSTOM_POLICIES_DIR"
+#   else
+#     policy_args+="-p $CUSTOM_POLICIES_DIR"
+#   fi
+# fi
 
-confest test "$cmd $policy_args"
+conftest test "${MANIFESTS_DIR}"
