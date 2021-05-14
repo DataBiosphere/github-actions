@@ -1,0 +1,21 @@
+name: "Terra Kubernetes linter"
+description: "Runs linter on Terra manifests"
+author: "Eno"
+inputs:
+  manifests_dir:
+    required: true
+    description: Directory where terra manifests are located
+  custom_policies_dir:
+    required: false
+    description: Directory where custom policies are located
+  ignore_default_policy:
+    required: false
+    default: false
+    description: Ignore default policies (boolean value)
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.manifests_dir }}
+    - ${{ inputs.custom_policies_dir }}
+    - ${{ inputs.ignore_default_policy }}
