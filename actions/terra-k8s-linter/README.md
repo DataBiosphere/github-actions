@@ -19,5 +19,5 @@ A Github Action to automatically lint kubernetes manifests
 | Name | Default | Required | Description|
 | ---- | ------- | -------- | ---------- |
 | `manifest_dir` |  | Yes | Directory where manifest reside|
-| `custom_policies_dir` |  | No | Directories were custom policies reside |
+| `custom_policies_dir` |  | No | Directories were additional custom policies reside |
 | `ignore_default_policy` | false | No | Whether to lint against default policies|
