@@ -27,6 +27,7 @@ deny_required_deployment_labels[msg] {
 }
 
 deny_liveness_probes[msg] {
+	input.kind == "Deployment"
 	not required_probes
 	msg = sprintf("%s Must have liveness probes", [name])
 }
