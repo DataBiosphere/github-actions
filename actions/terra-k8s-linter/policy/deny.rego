@@ -20,7 +20,8 @@ required_probes {
   input.spec.template.spec.containers["startupProbe"]
 }
 
-deny[msg] {
+deny_required_deployment_labels[msg] {
+	input.kind == "Deployment"
 	not required_deployment_labels
 	msg = sprintf("%s must include Kubernetes recommended labels", [name])
 }
