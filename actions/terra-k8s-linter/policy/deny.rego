@@ -14,22 +14,28 @@ required_deployment_labels {
 	input.metadata.labels["app.kubernetes.io/managed-by"]
 }
 
-required_probes {
-  input.spec.template.spec.containers["readinessProbe"]
-  input.spec.template.spec.containers["livenessProbe"]
-  input.spec.template.spec.containers["startupProbe"]
-}
-
 deny_required_deployment_labels[msg] {
 	input.kind == "Deployment"
 	not required_deployment_labels
 	msg = sprintf("%s must include Kubernetes recommended labels", [name])
 }
 
-deny_liveness_probes[msg] {
+deny_readiness_prob[msg] {
 	input.kind == "Deployment"
-	not required_probes
-	msg = sprintf("%s Must have liveness probes", [name])
+	not input.spec.template.spec.containers["readinessProbe"]
+	msg = sprintf("%s Must have readinessProbe probe.", [name])
+}
+
+deny_liveness_probe[msg] {
+	input.kind == "Deployment"
+	not input.spec.template.spec.containers["livenessProbe"]
+	msg = sprintf("%s Must have liveness probe.", [name])
+}
+
+deny_startup_probe[msg] {
+	input.kind == "Deployment"
+	not input.spec.template.spec.containers["startupProbe"]
+	msg = sprintf("%s Must have startupProbe", [name])
 }
 
 deny[msg] {
