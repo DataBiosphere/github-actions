@@ -20,27 +20,6 @@ deny_required_deployment_labels[msg] {
 	msg = sprintf("%s must include Kubernetes recommended labels", [name])
 }
 
-deny_readiness_prob[msg] {
-	input.kind == "Deployment"
-	not input.spec.template.spec.containers["readinessProbe"]
-	not input.app.probes["readinessProbe"]
-	msg = sprintf("%s Must have readinessProbe probe.", [name])
-}
-
-deny_liveness_probe[msg] {
-	input.kind == "Deployment"
-	not input.spec.template.spec.containers["livenessProbe"]
-	not input.app.probes["livenessProbe"]
-	msg = sprintf("%s  liveness probe.", [name])
-}
-
-deny_startup_probe[msg] {
-	input.kind == "Deployment"
-	not input.spec.template.spec.containers["startupProbe"]
-	not input.app.probes["startupProbe"]
-	msg = sprintf("%s Must have startupProbe", [name])
-}
-
 deny[msg] {
   input.kind == "Deployment"
   not input.spec.template.spec.securityContext.runAsNonRoot
