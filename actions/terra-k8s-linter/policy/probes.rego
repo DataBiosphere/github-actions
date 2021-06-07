@@ -1,3 +1,10 @@
+package main
+
+import data.kubernetes
+
+
+name = input.metadata.name
+
 has_probe(probe_type) {
 	input.kind == "Deployment"
 	data.spec.containers[_][probe_type]
