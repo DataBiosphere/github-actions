@@ -6,7 +6,7 @@ import data.kubernetes
 name = input.metadata.name
 
 has_probe(probe_type) {
-	input.kind == "Deployment"
+  input.kind == "Deployment"
   endswith(name, "-app")
 	input.spec.containers[_][probe_type]
 }
