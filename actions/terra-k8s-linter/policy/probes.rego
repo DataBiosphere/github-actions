@@ -7,7 +7,7 @@ name = input.metadata.name
 
 has_probe(probe_type) {
 	input.kind == "Deployment"
-  not endswith(name, "-app")
+  endswith(name, "-app")
 	data.spec.containers[_][probe_type]
 }
 
