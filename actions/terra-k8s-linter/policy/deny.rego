@@ -34,12 +34,12 @@ deny_proper_deployment_name[msg] {
 
 deny_replicas_count[msg] {
   input.kind == "Deployment"
-  not input.spec.replicas >= 3
+  input.spec.replicas <= 3
   msg := sprintf("Must have at least 3 replicas. %s has %b replicas.", [name, input.spec.replicas])
 }
 
 deny_revision_history[msg] {
   input.kind == "Deployment"
   input.spec.revisionHistoryLimit != 0
-  msg := sprintf("%s should set revisionHistoryLimit to 0", [name])
+  msg := sprintf("%s should set revisionHistoryLimit to 0. Currently is: %b", [name, input.spec.revisionHistoryLimit])
 }
