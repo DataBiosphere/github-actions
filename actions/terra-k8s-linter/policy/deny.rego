@@ -20,17 +20,10 @@ deny_required_deployment_labels[msg] {
   msg = sprintf("%s must include Kubernetes recommended labels", [name])
 }
 
-deny[msg] {
-  input.kind == "Deployment"
-  not input.spec.template.spec.securityContext.runAsNonRoot
-
-  msg := "Containers must not run as root"
-}
-
 deny_proper_service_account_name[msg] {
   input.kind == "Deployment"
   service_account_name := input.spec.template.spec.serviceAccountName
-  exp_service_account_name := sprintf("%s%s", [name, "-sa"])
+  exp_service_account_name := sprintf("%s%s", [input.metadata.labels.app, "-sa"])
   not service_account_name == exp_service_account_name
   msg := sprintf("Service account name expected: %s.  Service account name recieved: %s", [exp_service_account_name, service_account_name])
 }
@@ -38,7 +31,7 @@ deny_proper_service_account_name[msg] {
 deny_proper_deployment_name[msg] {
   input.kind == "Deployment"
   not endswith(name, "-deployment")
-  msg := sprintf("Deployment name needs to end in '-deployment'. Current name: %s", [name])
+  msg := sprintf("%s should end in '-deployment'.", [name])
 }
 
 deny_replicas_count[msg] {
@@ -50,6 +43,5 @@ deny_replicas_count[msg] {
 deny_revision_history[msg] {
   input.kind == "Deployment"
   input.spec.revisionHistoryLimit != 0
-
-  msg := "Deployments should set revisionHistoryLimit to 0"
+  msg := sprintf("%s should set revisionHistoryLimit to 0", [name])
 }
