@@ -36,7 +36,7 @@ deny_proper_deployment_name[msg] {
 
 deny_replicas_count[msg] {
   input.kind == "Deployment"
-  input.spec.replicas < 3
+  not input.spec.replicas >= 3
   msg := sprintf("Must have at least 3 replicas. %s has %b replicas.", [name, input.spec.replicas])
 }
 
