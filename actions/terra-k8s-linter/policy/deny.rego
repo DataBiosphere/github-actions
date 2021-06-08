@@ -6,7 +6,7 @@ import data.kubernetes
 name = input.metadata.name
 
 required_deployment_labels {
-  input.metadata.labels.app
+  input.metadata.labels["app.kubernetes.io/name"]
   input.metadata.labels["app.kubernetes.io/instance"]
   input.metadata.labels["app.kubernetes.io/version"]
   input.metadata.labels["app.kubernetes.io/component"]
