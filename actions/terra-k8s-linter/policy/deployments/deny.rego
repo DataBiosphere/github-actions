@@ -30,9 +30,3 @@ deny_revision_history[msg] {
   input.spec.revisionHistoryLimit != 0
   msg := sprintf("%s should set revisionHistoryLimit to 0. Currently is: %b", [name, input.spec.revisionHistoryLimit])
 }
-
-exception[rules] {
-  input.kind == "Deployment"
-  startswith(input.metadata.name , "datarepo-")
-  rules := ["deny"]
-}
