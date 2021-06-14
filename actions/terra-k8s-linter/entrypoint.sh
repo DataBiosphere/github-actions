@@ -36,4 +36,5 @@ else
   fi
 fi
 
-conftest test "${MANIFESTS_DIR}" -p "${policy_dirs}"
+# Run policies against manifests in directory except those associated with daterepo
+conftest test "${MANIFESTS_DIR}" -p "${policy_dirs}" --ignore=^.*datarepo.*$
