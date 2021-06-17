@@ -5,6 +5,7 @@ import data.kubernetes
 
 deny_proper_service_account_name[msg] {
   input.kind == "Deployment"
+  input.metadata.annotations["bio.terra.linter/serviceAccountName_exception"] != "enabled"
   app_name := input.spec.template.spec.name
   exp_service_account_name := sprintf("%s%s", [app_name, "-sa"])
   service_account_name := input.spec.template.spec.serviceAccountName
