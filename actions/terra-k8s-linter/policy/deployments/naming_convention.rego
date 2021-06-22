@@ -15,6 +15,7 @@ deny_proper_service_account_name[msg] {
 
 deny_proper_deployment_name[msg] {
   input.kind == "Deployment"
+  input.metadata.annotations["bio.terra.linter/name_exception"] != "enabled"
   name := input.metadata.name
   not endswith(name, "-deployment")
   msg := sprintf("Deployment name needs to end in '-deployment'. Current name: %s", [name])
