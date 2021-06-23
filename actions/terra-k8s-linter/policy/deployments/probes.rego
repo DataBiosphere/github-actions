@@ -18,7 +18,7 @@ deny_readiness_prob[msg] {
 
 deny_liveness_probe[msg] {
   has_probe("livenessProbe")
-  msg = sprintf("%s must have liveness probe.", [name])
+  msg = sprintf("%s must have livenessProbe.", [name])
 }
 
 deny_startup_probe[msg] {
