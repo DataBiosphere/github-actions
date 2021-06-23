@@ -13,7 +13,7 @@ has_probe(probe_type) {
 
 deny_readiness_prob[msg] {
   has_probe("readinessProbe")
-  msg = sprintf("%s must have readinessProbe probe.", [name])
+  msg = sprintf("%s must have readinessProbe.", [name])
 }
 
 deny_liveness_probe[msg] {

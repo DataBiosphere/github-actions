@@ -10,7 +10,7 @@ deny_proper_service_account_name[msg] {
   exp_service_account_name := sprintf("%s%s", [app_name, "-sa"])
   service_account_name := input.spec.template.spec.serviceAccountName
   not service_account_name == exp_service_account_name
-  msg := sprintf("Service account name expected: %s.  Service account name recieved: %s", [exp_service_account_name, service_account_name])
+  msg := sprintf("Service account name expected: %s.  Service account name received: %s", [exp_service_account_name, service_account_name])
 }
 
 deny_proper_deployment_name[msg] {
