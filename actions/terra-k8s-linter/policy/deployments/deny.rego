@@ -1,10 +1,16 @@
+# General policies for deployments
 package main
 
 import data.kubernetes
 
-
+# Manifest name
 name = input.metadata.name
 
+# Constant values. Please don't update
+min_required_replicas := 3
+revision_history_limit := 0
+
+# Required standard labels as defined by Kubernetes
 required_deployment_labels {
   input.metadata.labels["app.kubernetes.io/name"]
   input.metadata.labels["app.kubernetes.io/instance"]
@@ -21,12 +27,12 @@ deny_required_deployment_labels[msg] {
 deny_replicas[msg] {
   input.kind == "Deployment"
   input.metadata.annotations["bio.terra.linter/replicas_exception"] != "enabled"
-  input.spec.replicas < 3
+  input.spec.replicas < min_required_replicas
   msg := sprintf("Must have at least 3 replicas. %s has %d replicas.", [name, input.spec.replicas])
 }
 
 deny_revision_history[msg] {
   input.kind == "Deployment"
-  input.spec.revisionHistoryLimit != 0
+  input.spec.revisionHistoryLimit != revision_history_limit
   msg := sprintf("%s should set revisionHistoryLimit to 0. Currently is: %b", [name, input.spec.revisionHistoryLimit])
 }

@@ -1,3 +1,4 @@
+# Policies dealing with naming conventions
 package main
 
 import data.kubernetes
@@ -13,6 +14,7 @@ deny_proper_service_account_name[msg] {
   msg := sprintf("Service account name expected: %s.  Service account name received: %s", [exp_service_account_name, service_account_name])
 }
 
+# Makes it easy to tell a Pod was created by a Deployment and not a CronJob or other thing!
 deny_proper_deployment_name[msg] {
   input.kind == "Deployment"
   input.metadata.annotations["bio.terra.linter/name_exception"] != "enabled"
