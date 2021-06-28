@@ -6,9 +6,11 @@ import data.kubernetes
 # Manifest name
 name = input.metadata.name
 
-# Constant values. Please don't update
-min_required_replicas := 3
-revision_history_limit := 0
+# Constant value as defined in:
+# https://github.com/DataBiosphere/github-actions/tree/master/actions/terra-k8s-linter
+# Please don't update
+min_required_replicas = 3
+revision_history_limit = 0
 
 # Required standard labels as defined by Kubernetes
 required_deployment_labels {
@@ -34,5 +36,5 @@ deny_replicas[msg] {
 deny_revision_history[msg] {
   input.kind == "Deployment"
   input.spec.revisionHistoryLimit != revision_history_limit
-  msg := sprintf("%s should set revisionHistoryLimit to 0. Currently is: %b", [name, input.spec.revisionHistoryLimit])
+  msg := sprintf("%s should set revisionHistoryLimit to 0. Currently is: %d", [name, input.spec.revisionHistoryLimit])
 }

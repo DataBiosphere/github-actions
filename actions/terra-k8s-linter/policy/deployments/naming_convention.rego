@@ -3,6 +3,7 @@ package main
 
 import data.kubernetes
 
+# Manifest name
 name = input.metadata.name
 
 deny_proper_service_account_name[msg] {
