@@ -11,7 +11,6 @@ name = input.metadata.name
 
 has_probe(probe_type) {
   input.kind == "Deployment"
-  endswith(name, "-app")
   input.spec.containers[_][probe_type]
 }
 
@@ -20,8 +19,6 @@ deny_readiness_prob[msg] {
   msg = sprintf("%s must have readinessProbe.", [name])
 }
 
-#  A liveness probe will automatically restart a container after the status
-#  probe fails
 deny_liveness_probe[msg] {
   has_probe("livenessProbe")
   msg = sprintf("%s must have livenessProbe.", [name])
