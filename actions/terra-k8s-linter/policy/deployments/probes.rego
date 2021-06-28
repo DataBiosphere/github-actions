@@ -1,13 +1,10 @@
-# Probe will prevent a pod from serving traffic before the application has
-# fully started, as well as prevent a broken deployment from continuing. It will
-# also prevent the pod from serving traffic if the status endpoint starts to
-# fail at any point after startup
+# Policies for probes
 package main
 
 import data.kubernetes
 
 # Manifest name
-name = input.metadata.name
+name = input.metadata.labels["app.kubernetes.io/name"]
 
 has_probe(probe_type) {
   input.kind == "Deployment"

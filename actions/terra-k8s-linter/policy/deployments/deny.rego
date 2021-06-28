@@ -4,10 +4,9 @@ package main
 import data.kubernetes
 
 # Manifest name
-name = input.metadata.name
+name = input.metadata.labels["app.kubernetes.io/name"]
 
-# Constant value as defined in:
-# https://github.com/DataBiosphere/github-actions/tree/master/actions/terra-k8s-linter
+# Constant value as defined in README
 # Please don't update
 min_required_replicas = 3
 revision_history_limit = 0
