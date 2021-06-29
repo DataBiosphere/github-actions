@@ -11,7 +11,7 @@ deny_proper_service_account_name[msg] {
   input.metadata.annotations["bio.terra.linter/serviceAccountName_exception"] != "enabled"
   exp_service_account_name := sprintf("%s%s", [name, "-sa"])
   service_account_name := input.spec.template.spec.serviceAccountName
-  not service_account_name == exp_service_account_name
+  service_account_name != exp_service_account_name
   msg := sprintf("Service account name expected: %s.  Service account name received: %s", [exp_service_account_name, service_account_name])
 }
 
