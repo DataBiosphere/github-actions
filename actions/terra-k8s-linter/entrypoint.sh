@@ -38,4 +38,4 @@ fi
 
 # Run policies against manifests in directory except those associated with daterepo
 # Temporaily exclude buffer until bug dealing with manifests are addressed
-conftest test "${MANIFESTS_DIR}" -p "${policy_dirs}" --ignore="(^.*datarepo.*|${policy_dirs})"
+conftest test "${MANIFESTS_DIR}" -p "${policy_dirs}" --ignore=^.*datarepo.*$
