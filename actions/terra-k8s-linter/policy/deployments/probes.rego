@@ -9,13 +9,7 @@ import data.kubernetes
 # Manifest name
 name = input.metadata.name
 
-has_probe(probe_type) {
-  input.kind == "Deployment"
-  endswith(name, "-app")
-  input.spec.containers[_][probe_type]
-}
-
-deny_readiness_prob[msg] {
+deny_readiness_probe[msg] {
   input.kind == "Deployment"
 	input.spec.containers["readinessProbe"]
   msg := sprintf("%s must have readinessProbe.", [name])
