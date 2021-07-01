@@ -1,38 +1,36 @@
-# Policies for probes
+# Probe will prevent a pod from serving traffic before the application has
+# fully started, as well as prevent a broken deployment from continuing. It will
+# also prevent the pod from serving traffic if the status endpoint starts to
+# fail at any point after startup
 package main
 
 import data.kubernetes
 
 # Manifest name
-name = input.metadata.labels["app.kubernetes.io/name"]
-deployment_manifests := [manifests | input[i].kind == "Deployment"; manifests := input[i]]
+name = input.metadata.name
 
-# readiness_prob(probe) = deployments_no_probe {
-# 	deployments_no_probe := [no_probe | deployment_manifests[i].spec.template.spec.containers[_][probe]; no_probe := deployment_manifests[i].metadata.name]
-#
-# }
-#
-# deny_liveness_probe[msg] {
-#   deployments_no_probe
-#   msg = sprintf("%s must have livenessProbe.", [name])
-# }
-
-no_probe(probe_type) = [container_name] {
-	container_name := {name | deployment_manifests[_].spec.template.spec.containers[i]; name := deployment_manifests[_].spec.template.spec.containers[i]}
-  not has_probe[container_name]
+has_probe(probe_type) {
+  input.kind == "Deployment"
+  endswith(name, "-app")
+  input.spec.containers[_][probe_type]
 }
 
-has_probe[container_name] {
-	container_name := { name | deployment_manifests[_].spec.template.spec.containers[i][livenessProbe]; name := deployment_manifests[_].spec.template.spec.containers[i]}[_]
+deny_readiness_prob[msg] {
+  input.kind == "Deployment"
+	input.spec.containers["readinessProbe"]
+  msg := sprintf("%s must have readinessProbe.", [name])
 }
 
+#  A liveness probe will automatically restart a container after the status
+#  probe fails
 deny_liveness_probe[msg] {
-  no_probe_containers := no_probe("livenessProbe")
-	count(no_probe_containers) != 0
-  msg = sprintf("%s must have livenessProbe.", [no_probe_containers])
+	input.kind == "Deployment"
+	input.spec.containers["livenessProbe"]
+  msg := sprintf("%s must have livenessProbe.", [name])
 }
-#
-# deny_startup_probe[msg] {
-#   not has_probe("startupProbe")
-#   msg = sprintf("%s Must have startupProbe", [name])
-# }
+
+deny_startup_probe[msg] {
+	input.kind == "Deployment"
+	input.spec.containers["startupProbe"]
+  msg := sprintf("%s Must have startupProbe", [name])
+}
