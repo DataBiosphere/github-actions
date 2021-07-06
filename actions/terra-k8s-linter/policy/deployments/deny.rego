@@ -1,10 +1,10 @@
 # General policies for deployments
-package main
+package temp
 
 import data.kubernetes
 
 # Manifest name
-name = input.metadata.labels["app.kubernetes.io/name"]
+name = input.metadata.name
 
 # Constant value as defined in README
 # Please don't update
@@ -22,13 +22,13 @@ required_deployment_labels {
 deny_required_deployment_labels[msg] {
   input.kind == "Deployment"
   not required_deployment_labels
-  msg = sprintf("%s must include Kubernetes recommended labels", [name])
+  msg := sprintf("%s must include Kubernetes recommended labels", [name])
 }
 
-deny_replicas[msg] {
+deny_replicas{
   input.kind == "Deployment"
   input.metadata.annotations["bio.terra.linter/replicas_exception"] != "enabled"
-  input.spec.replicas < min_required_replicas
+  input.spec.replicas < 3
   msg := sprintf("Must have at least 3 replicas. %s has %d replicas.", [name, input.spec.replicas])
 }
 
