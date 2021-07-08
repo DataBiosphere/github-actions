@@ -8,7 +8,6 @@ name = input.metadata.name
 
 # Constant value as defined in README
 # Please don't update
-min_required_replicas = 3
 revision_history_limit = 0
 
 # Required standard labels as defined by Kubernetes
