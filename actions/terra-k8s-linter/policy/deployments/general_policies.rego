@@ -27,5 +27,5 @@ deny_required_deployment_labels[msg] {
 deny_revision_history[msg] {
   input.kind == "Deployment"
   input.spec.revisionHistoryLimit != revision_history_limit
-  msg = sprintf("%s should set revisionHistoryLimit to 0. Currently is: %d", [name, input.spec.revisionHistoryLimit])
+  msg = sprintf("%s should set revisionHistoryLimit to %d. Currently is: %d", [name, revision_history_limit,  input.spec.revisionHistoryLimit])
 }
