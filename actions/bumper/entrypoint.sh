@@ -106,7 +106,8 @@ if $hotfix_release; then
     part="hotfix"
 else           
     # For non-hotfix, we compute the new version
-    # If there is an override, use that
+    # If there is an override for what part to bump, use that. If there is a #xyz in the log message, use that.
+    # Othewise, use the default part.
     if [ -n "$override_semvar_bump" ]; then
         part=$override_semvar_bump
     else
@@ -124,9 +125,8 @@ else
                     part="${default_semvar_bump}"
                 fi
         esac
-
-        new=$(semver bump $part $tag)
     fi
+    new=$(semver bump $part $tag)
 fi
 
 echo "Updated semver part $part"
