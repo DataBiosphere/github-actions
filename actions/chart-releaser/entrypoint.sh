@@ -15,7 +15,7 @@ set_vars() {
         if [ -z ${!varCaps+x} ]; then
             eval "$var"=$(yq r "$config_file" "$var.default")
         else
-            eval "$var"="${!varCaps}"
+            eval "$var"="$( printf "%q" ${!varCaps} )"
         fi
     done
 }
