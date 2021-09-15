@@ -221,7 +221,7 @@ setup_gcs() {
   gcs_sa_key_file="sa-key.json"
   echo $gcs_sa_key_b64 | base64 -d > "$gcs_sa_key_file"
   # https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
-  gcloud auth active-service-account "${gcs_sa_email}" --key-file="${gcs_sa_key_file}"
+  gcloud auth activate-service-account "${gcs_sa_email}" --key-file="${gcs_sa_key_file}"
   eok 'Authed to GCP'
 }
 
