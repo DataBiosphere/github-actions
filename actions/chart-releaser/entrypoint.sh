@@ -15,7 +15,7 @@ set_vars() {
         if [ -z ${!varCaps+x} ]; then
             eval "$var"=$(yq r "$config_file" "$var.default")
         else
-            eval "$var"="$( printf "%q" ${!varCaps} )"
+            eval "$var"="${!varCaps}"
         fi
     done
 }
@@ -219,8 +219,6 @@ setup_gcs() {
     fi
 
     einfo 'Authenticating to GCP...'
-    gcs_sa_key_file="helm-gcs-sa-key.json"
-    echo "$gcs_sa_key" > "$gcs_sa_key_file"
     # https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
     gcloud auth activate-service-account --key-file="${gcs_sa_key_file}"
     eok 'Authed to GCP'
