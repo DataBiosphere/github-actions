@@ -24,9 +24,7 @@ main() {
     repo_url=https://x-access-token:${github_token}@github.com/${github_owner}/${github_repo}
     charts_repo_url=https://${github_owner}.github.io/${github_repo}
 
-    if [[ "$gcs_enabled" == "true" ]]; then
-        setup_gcs
-    fi
+    setup
 
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
@@ -152,10 +150,8 @@ package_chart() {
 }
 
 release_charts() {
-  release_charts_cr || return 1
-  if [[ "$gcs_enabled" == "true" ]]; then
-    release_charts_gcs
-  fi
+  release_charts_cr || return $?
+  release_charts_gcs
 }
 
 release_charts_cr() {
@@ -165,6 +161,11 @@ release_charts_cr() {
 }
 
 release_charts_gcs() {
+    if [[ "$gcs_enabled" != "true" ]]; then
+        einfo "GCS publishing disabled, won't upload charts to GCS bucket"
+        return 0
+    fi
+
     einfo 'Releasing charts to GCS bucket...'
     # TODO
     # cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
@@ -172,10 +173,8 @@ release_charts_gcs() {
 }
 
 update_index() {
-    update_index_cr || return 1
-    if [[ "$gcs_enabled" == "true" ]]; then
-        update_index_gcs
-    fi
+    update_index_cr || return $?
+    update_index_gcs
 }
 
 update_index_cr() {
@@ -198,12 +197,26 @@ update_index_cr() {
 }
 
 update_index_gcs() {
+    if [[ "$gcs_enabled" != "true" ]]; then
+        einfo "GCS publishing disabled, won't update index.yaml in GCS bucket"
+        return 0
+    fi
+
     einfo 'Updating charts repo index in GCS bucket...'
     # TODO
     eok 'Index updated'
 }
 
+setup() {
+  setup_gcs
+}
+
 setup_gcs() {
+  if [[ "$gcs_enabled" != "true" ]]; then
+      einfo "GCS publishing disabled, won't set up up GCP auth"
+      return 0
+  fi
+
   einfo 'Authenticating to GCP...'
   gcs_sa_key_file="sa-key.json"
   echo $gcs_sa_key_b64 | base64 -d > "$gcs_sa_key_file"
