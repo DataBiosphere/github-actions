@@ -161,7 +161,7 @@ release_charts_cr() {
 }
 
 release_charts_gcs() {
-    if [[ "$gcs_enabled" != "true" ]]; then
+    if [[ "$gcs_publishing_enabled" != "true" ]]; then
         einfo "GCS publishing disabled, won't upload charts to GCS bucket"
         return 0
     fi
@@ -197,7 +197,7 @@ update_index_cr() {
 }
 
 update_index_gcs() {
-    if [[ "$gcs_enabled" != "true" ]]; then
+    if [[ "$gcs_publishing_enabled" != "true" ]]; then
         einfo "GCS publishing disabled, won't update index.yaml in GCS bucket"
         return 0
     fi
@@ -212,7 +212,7 @@ setup() {
 }
 
 setup_gcs() {
-  if [[ "$gcs_enabled" != "true" ]]; then
+  if [[ "$gcs_publishing_enabled" != "true" ]]; then
       einfo "GCS publishing disabled, won't set up up GCP auth"
       return 0
   fi

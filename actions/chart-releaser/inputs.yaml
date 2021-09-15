@@ -22,7 +22,7 @@ github_owner:
 github_repo:
   description: GitHub repository name
   default: terra-helm
-gcs_enabled:
+gcs_publishing_enabled:
   description: Whether to publish to GCS bucket in addition to GitHub releases
   default: false
 gcs_bucket:
