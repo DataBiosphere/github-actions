@@ -166,10 +166,8 @@ release_charts_gcs() {
         return 0
     fi
 
-    einfo 'Releasing charts to GCS bucket...'
-    # TODO
-    gsutil cp .cr-release-packages/* gs:///terra-helm
-    # cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
+    einfo 'Uploading new charts to GCS bucket...'
+    gsutil cp .cr-release-packages/*.tgz gs://terra-helm
     eok 'Charts released'
 }
 
@@ -203,8 +201,16 @@ update_index_gcs() {
         return 0
     fi
 
-    einfo 'Updating charts repo index in GCS bucket...'
-    # TODO
+    einfo 'Updating repo index in GCS bucket...'
+    gsutil cp "gs://${gcs_bucket}/index.yaml" .cr-release-packages/index.original.yaml || return $?
+
+    helm repo index \
+      .cr-release-packages \
+      --merge .cr-release-packages/index.original.yaml \
+      --url="https://${gcs_bucket}.storage.googleapis.com/" || return $?
+
+    gsutil cp .cr-release-packages/index.yaml  "gs://${gcs_bucket}/index.yaml" || return $?
+
     eok 'Index updated'
 }
 
