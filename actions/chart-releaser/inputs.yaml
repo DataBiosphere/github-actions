@@ -28,9 +28,6 @@ gcs_publishing_enabled:
 gcs_bucket:
   description: Name of the GCS bucket to publish to
   default: terra-helm
-gcs_sa_email:
-  description: Email for the GCP SA to use for publishing charts
-  default: ""
-gcs_sa_key_b64:
-  description: Base64-encoded GCP SA Key to use for publishing charts
+gcs_sa_key:
+  description: GCP SA Key to use for publishing charts
   default: ""

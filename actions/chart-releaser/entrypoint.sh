@@ -168,6 +168,7 @@ release_charts_gcs() {
 
     einfo 'Releasing charts to GCS bucket...'
     # TODO
+    gsutil cp .cr-release-packages/* gs:///terra-helm
     # cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
     eok 'Charts released'
 }
@@ -218,10 +219,10 @@ setup_gcs() {
   fi
 
   einfo 'Authenticating to GCP...'
-  gcs_sa_key_file="sa-key.json"
-  echo $gcs_sa_key_b64 | base64 -d > "$gcs_sa_key_file"
+  gcs_sa_key_file="helm-gcs-sa-key.json"
+  echo "$gcs_sa_key" > "$gcs_sa_key_file"
   # https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
-  gcloud auth activate-service-account "${gcs_sa_email}" --key-file="${gcs_sa_key_file}"
+  gcloud auth activate-service-account --key-file="${gcs_sa_key_file}"
   eok 'Authed to GCP'
 }
 
