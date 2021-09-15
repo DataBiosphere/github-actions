@@ -23,7 +23,9 @@ set_vars() {
 main() {
     repo_url=https://x-access-token:${github_token}@github.com/${github_owner}/${github_repo}
     charts_repo_url=https://${github_owner}.github.io/${github_repo}
- 
+
+    setup
+
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
     edebug "Working in $repo_root"
@@ -34,7 +36,6 @@ main() {
     edumpvar changed_charts
 
     if [[ -n "${changed_charts[*]}" ]]; then
-        
         edebug "Configuring chart releaser folders"
         rm -rf .cr-release-packages
         mkdir -p .cr-release-packages
@@ -149,13 +150,34 @@ package_chart() {
 }
 
 release_charts() {
-    einfo 'Releasing charts...'
+    release_charts_cr || return $?
+    release_charts_gcs
+}
+
+release_charts_cr() {
+    einfo 'Releasing charts with chart-releaser...'
     cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
     eok 'Charts released'
 }
 
+release_charts_gcs() {
+    if [[ "$gcs_publishing_enabled" != "true" ]]; then
+        einfo "GCS publishing disabled, won't upload charts to GCS bucket"
+        return 0
+    fi
+
+    einfo 'Uploading new charts to GCS bucket...'
+    gsutil cp .cr-release-packages/*.tgz gs://terra-helm
+    eok 'Charts released'
+}
+
 update_index() {
-    einfo 'Updating charts repo index...'
+    update_index_cr || return $?
+    update_index_gcs
+}
+
+update_index_cr() {
+    einfo 'Updating charts repo index with chart-releaser...'
 
     cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$github_token"
     gh_pages_worktree=$(mktemp -d)
@@ -171,6 +193,41 @@ update_index() {
     popd > /dev/null
 
     eok 'Index updated'
+}
+
+update_index_gcs() {
+    if [[ "$gcs_publishing_enabled" != "true" ]]; then
+        einfo "GCS publishing disabled, won't update index.yaml in GCS bucket"
+        return 0
+    fi
+
+    einfo 'Updating repo index in GCS bucket...'
+    gsutil cp "gs://${gcs_bucket}/index.yaml" .cr-release-packages/index.original.yaml || return $?
+
+    helm repo index \
+      .cr-release-packages \
+      --merge .cr-release-packages/index.original.yaml \
+      --url="https://${gcs_bucket}.storage.googleapis.com/" || return $?
+
+    gsutil cp .cr-release-packages/index.yaml  "gs://${gcs_bucket}/index.yaml" || return $?
+
+    eok 'Index updated'
+}
+
+setup() {
+    setup_gcs
+}
+
+setup_gcs() {
+    if [[ "$gcs_publishing_enabled" != "true" ]]; then
+        einfo "GCS publishing disabled, won't set up up GCP auth"
+        return 0
+    fi
+
+    einfo 'Authenticating to GCP...'
+    # https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
+    gcloud auth activate-service-account --key-file="${gcs_sa_key_file}"
+    eok 'Authed to GCP'
 }
 
 colblk='\033[0;30m' # Black - Regular
