@@ -150,8 +150,8 @@ package_chart() {
 }
 
 release_charts() {
-  release_charts_cr || return $?
-  release_charts_gcs
+    release_charts_cr || return $?
+    release_charts_gcs
 }
 
 release_charts_cr() {
@@ -209,21 +209,21 @@ update_index_gcs() {
 }
 
 setup() {
-  setup_gcs
+    setup_gcs
 }
 
 setup_gcs() {
-  if [[ "$gcs_publishing_enabled" != "true" ]]; then
-      einfo "GCS publishing disabled, won't set up up GCP auth"
-      return 0
-  fi
+    if [[ "$gcs_publishing_enabled" != "true" ]]; then
+        einfo "GCS publishing disabled, won't set up up GCP auth"
+        return 0
+    fi
 
-  einfo 'Authenticating to GCP...'
-  gcs_sa_key_file="helm-gcs-sa-key.json"
-  echo "$gcs_sa_key" > "$gcs_sa_key_file"
-  # https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
-  gcloud auth activate-service-account --key-file="${gcs_sa_key_file}"
-  eok 'Authed to GCP'
+    einfo 'Authenticating to GCP...'
+    gcs_sa_key_file="helm-gcs-sa-key.json"
+    echo "$gcs_sa_key" > "$gcs_sa_key_file"
+    # https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
+    gcloud auth activate-service-account --key-file="${gcs_sa_key_file}"
+    eok 'Authed to GCP'
 }
 
 colblk='\033[0;30m' # Black - Regular
