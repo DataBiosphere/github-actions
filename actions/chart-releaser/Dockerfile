@@ -1,4 +1,4 @@
-FROM alpine
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
 
 ARG YQ_VERSION=3.3.2
 ARG YQ_SHA256=0b0700cfee1d642a0a19f8f9261b2f0a11b7174ef8bcd39e9ed334d9519f0125

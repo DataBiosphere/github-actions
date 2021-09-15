@@ -23,7 +23,11 @@ set_vars() {
 main() {
     repo_url=https://x-access-token:${github_token}@github.com/${github_owner}/${github_repo}
     charts_repo_url=https://${github_owner}.github.io/${github_repo}
- 
+
+    if [[ "$gcs_enabled" == "true" ]]; then
+        setup_gcs
+    fi
+
     local repo_root=$(git rev-parse --show-toplevel)
     pushd "$repo_root" > /dev/null
     edebug "Working in $repo_root"
@@ -34,7 +38,6 @@ main() {
     edumpvar changed_charts
 
     if [[ -n "${changed_charts[*]}" ]]; then
-        
         edebug "Configuring chart releaser folders"
         rm -rf .cr-release-packages
         mkdir -p .cr-release-packages
@@ -149,13 +152,34 @@ package_chart() {
 }
 
 release_charts() {
-    einfo 'Releasing charts...'
+  release_charts_cr || return 1
+  if [[ "$gcs_enabled" == "true" ]]; then
+    release_charts_gcs
+  fi
+}
+
+release_charts_cr() {
+    einfo 'Releasing charts with chart-releaser...'
     cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
     eok 'Charts released'
 }
 
+release_charts_gcs() {
+    einfo 'Releasing charts to GCS bucket...'
+    # TODO
+    # cr upload -o "$github_owner" -r "$github_repo" -t "$github_token" -c "$(git rev-parse HEAD)"
+    eok 'Charts released'
+}
+
 update_index() {
-    einfo 'Updating charts repo index...'
+    update_index_cr || return 1
+    if [[ "$gcs_enabled" == "true" ]]; then
+        update_index_gcs
+    fi
+}
+
+update_index_cr() {
+    einfo 'Updating charts repo index with chart-releaser...'
 
     cr index -o "$github_owner" -r "$github_repo" -c "$charts_repo_url" -t "$github_token"
     gh_pages_worktree=$(mktemp -d)
@@ -171,6 +195,21 @@ update_index() {
     popd > /dev/null
 
     eok 'Index updated'
+}
+
+update_index_gcs() {
+    einfo 'Updating charts repo index in GCS bucket...'
+    # TODO
+    eok 'Index updated'
+}
+
+setup_gcs() {
+  einfo 'Authenticating to GCP...'
+  gcs_sa_key_file="sa-key.json"
+  echo $gcs_sa_key_b64 | base64 -d > "$gcs_sa_key_file"
+  # https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
+  gcloud auth active-service-account "${gcs_sa_email}" --key-file="${gcs_sa_key_file}"
+  eok 'Authed to GCP'
 }
 
 colblk='\033[0;30m' # Black - Regular
