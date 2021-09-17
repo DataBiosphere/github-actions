@@ -167,7 +167,8 @@ release_charts_gcs() {
     fi
 
     einfo 'Uploading new charts to GCS bucket...'
-    gsutil cp .cr-release-packages/*.tgz gs://terra-helm
+    # Set no-cache so that Helm always pulls down the latest copy of the file
+    gsutil -h "Cache-Control:no-cache" cp .cr-release-packages/*.tgz gs://terra-helm || return $?
     eok 'Charts released'
 }
 
@@ -209,7 +210,8 @@ update_index_gcs() {
       --merge .cr-release-packages/index.original.yaml \
       --url="https://${gcs_bucket}.storage.googleapis.com/" || return $?
 
-    gsutil cp .cr-release-packages/index.yaml  "gs://${gcs_bucket}/index.yaml" || return $?
+    # Set no-cache so that Helm always pulls down the latest copy of the index
+    gsutil -h "Cache-Control:no-cache" cp .cr-release-packages/index.yaml  "gs://${gcs_bucket}/index.yaml" || return $?
 
     eok 'Index updated'
 }
