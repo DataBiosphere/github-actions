@@ -168,7 +168,7 @@ release_charts_gcs() {
 
     einfo 'Uploading new charts to GCS bucket...'
     # Set no-cache so that Helm always pulls down the latest copy of the file
-    gsutil -h "Cache-Control:no-cache" cp .cr-release-packages/*.tgz gs://terra-helm || return $?
+    gsutil -h "Cache-Control:no-cache" cp .cr-release-packages/*.tgz "gs://${gcs_bucket}" || return $?
     eok 'Charts released'
 }
 
