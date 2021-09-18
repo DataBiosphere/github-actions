@@ -167,8 +167,10 @@ release_charts_gcs() {
     fi
 
     einfo 'Uploading new charts to GCS bucket...'
-    # Set no-cache so that Helm always pulls down the latest copy of the file
-    gsutil -h "Cache-Control:no-cache" cp .cr-release-packages/*.tgz "gs://${gcs_bucket}" || return $?
+    # Allow charts tgz files to be cached for up to 5 minutes
+    gsutil -h "Cache-Control: public, max-age=300" \
+      cp .cr-release-packages/*.tgz "gs://${gcs_bucket}/charts" || return $?
+
     eok 'Charts released'
 }
 
@@ -198,20 +200,31 @@ update_index_cr() {
 
 update_index_gcs() {
     if [[ "$gcs_publishing_enabled" != "true" ]]; then
-        einfo "GCS publishing disabled, won't update index.yaml in GCS bucket"
+        einfo "GCS publishing disabled, won't update index.yaml in ${gcs_bucket} bucket"
         return 0
     fi
 
-    einfo 'Updating repo index in GCS bucket...'
-    gsutil cp "gs://${gcs_bucket}/index.yaml" .cr-release-packages/index.original.yaml || return $?
+    index_dir=".gcs-index-tmp"
+    mkdir -p "${index_dir}/charts" || return $?
 
+    einfo "Copying index.yaml from ${gcs_bucket} bucket to ${index_dir}"
+    gsutil cp "gs://${gcs_bucket}/index.yaml" \
+      "${index_dir}/index.original.yaml" || return $?
+
+    einfo "Generating updated index.yaml"
+    cp .cr-release-packages/*.tgz "${index_dir}/charts" || return $?
     helm repo index \
-      .cr-release-packages \
-      --merge .cr-release-packages/index.original.yaml \
+      "${index_dir}" \
+      --merge "${index_dir}/index.original.yaml" \
       --url="https://${gcs_bucket}.storage.googleapis.com/" || return $?
 
-    # Set no-cache so that Helm always pulls down the latest copy of the index
-    gsutil -h "Cache-Control:no-cache" cp .cr-release-packages/index.yaml  "gs://${gcs_bucket}/index.yaml" || return $?
+    # Set Cache-Control to no-cache so that Helm always pulls down the latest copy of the index.yaml file
+    einfo "Uploading index.yaml to ${gcs_bucket} bucket"
+    gsutil -h "Cache-Control: no-cache" \
+      cp "${index_dir}/index.yaml" "gs://${gcs_bucket}/index.yaml" || return $?
+
+    einfo "Cleaning up ${index_dir}"
+    rm -rf "${index_dir}" || return $?
 
     eok 'Index updated'
 }
