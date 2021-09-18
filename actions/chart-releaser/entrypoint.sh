@@ -166,10 +166,12 @@ release_charts_gcs() {
         return 0
     fi
 
+    chart_dest="gs://${gcs_bucket}/charts"
     einfo "Uploading new charts to \"${chart_dest}\": $( ls .cr-release-packages/*.tgz )"
+
     # Allow charts tgz files to be cached for up to 5 minutes
     gsutil -h "Cache-Control: public, max-age=300" \
-      cp .cr-release-packages/*.tgz "gs://${gcs_bucket}/charts" || return $?
+      cp .cr-release-packages/*.tgz "$chart_dest" || return $?
 
     eok 'Charts released'
 }
