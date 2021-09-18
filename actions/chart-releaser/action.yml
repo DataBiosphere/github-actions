@@ -6,6 +6,4 @@ branding:
   color: purple
 runs:
   using: 'docker'
-  image: Dockerfile
-  # TODO revert before merging
-  # image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/chart-releaser:0.6.0
+  image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/chart-releaser:0.6.0
