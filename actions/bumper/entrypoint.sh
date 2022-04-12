@@ -49,9 +49,14 @@ echo "pre_release = $pre_release"
 # fetch tags
 git fetch --tags
 
-# get latest tag that looks like a semver (with or without v)
+# get latest tag that looks like a semver (with or without v, using with_v)
+if $with_v; then
+  tag_pattern="refs/tags/v[0-9]*.[0-9]*.[0-9]*"
+else
+  tag_pattern="refs/tags/[0-9]*.[0-9]*.[0-9]*"
+fi
 case "$tag_context" in
-    *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' refs/tags/[0-9]*.[0-9]*.[0-9]* refs/tags/v[0-9]*.[0-9]*.[0-9]* | cut -d / -f 3-);;
+    *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' "$tag_pattern" | cut -d / -f 3-);;
     *branch*) tag=$(git describe --tags --match "*[v0-9].*[0-9\.]" --abbrev=0);;
     * ) echo "Unrecognised context"; exit 1;;
 esac
