@@ -16,7 +16,7 @@ version_suffix=${VERSION_SUFFIX}
 hotfix_version=${HOTFIX_VERSION}
 
 cd ${GITHUB_WORKSPACE}/${source}
-
+git config --global --add safe.directory $(pwd)
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
 hotfix_release="false"
