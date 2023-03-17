@@ -51,9 +51,9 @@ git fetch --tags
 
 # get latest tag that looks like a semver (with or without v, using with_v)
 if $with_v; then
-  tag_pattern="refs/tags/v[0-9]*.[0-9]*.[0-9]*"
+    tag_pattern="refs/tags/v[0-9]*.[0-9]*.[0-9]*"
 else
-  tag_pattern="refs/tags/[0-9]*.[0-9]*.[0-9]*"
+    tag_pattern="refs/tags/[0-9]*.[0-9]*.[0-9]*"
 fi
 case "$tag_context" in
     *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' "$tag_pattern" | cut -d / -f 3-);;
@@ -70,7 +70,7 @@ commit=$(git rev-parse HEAD)
 
 if [ "$tag_commit" == "$commit" ]; then
     echo "No new commits since previous tag. Skipping..."
-    echo ::set-output name=tag::$tag
+    echo tag=$tag >> $GITHUB_OUTPUT
     exit 0
 fi
 
@@ -142,30 +142,29 @@ then
     # prefix with 'v'
     if $with_v
     then
-	new="v$new"
+        new="v$new"
     fi
     
     if $pre_release
     then
-	new="$new-${commit:0:7}"
+        new="$new-${commit:0:7}"
     fi
 fi
 
 echo "New tag is $new"
 
 # set outputs
-echo ::set-output name=new_tag::$new
-echo ::set-output name=part::$part
+echo new_tag=$new >> $GITHUB_OUTPUT
+echo part=$part >> $GITHUB_OUTPUT
 
 # use dry run to determine the next tag
 if $dryrun
 then
-    echo ::set-output name=tag::$tag
+    echo tag=$tag >> $GITHUB_OUTPUT
     exit 0
 fi 
 
-echo ::set-output name=tag::$new
-
+echo tag=$new >> $GITHUB_OUTPUT
 
 if $pre_release
 then
