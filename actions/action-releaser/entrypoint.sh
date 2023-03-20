@@ -77,9 +77,12 @@ filter_actions() {
 }
 
 lookup_changed_actions() {
-    #look for changed files in the latest commit
+    # look for changed files in the latest commit
+    # merge commits have multiple parents, use '^@' to fetch all parents of the merge
+    # use variable to handle newline in git-rev-parse output
+    local commit_sha=$(git rev-parse HEAD^@)
     local changed_files
-    changed_files=$(git diff-tree --no-commit-id --name-only -r "$(git rev-parse HEAD)" -- $INPUT_ACTIONS_DIR)
+    changed_files=$(git diff-tree --no-commit-id --name-only -r $commit_sha -- $INPUT_ACTIONS_DIR)
     cut -d '/' -f '2' <<< "$changed_files" | uniq | filter_actions
 }
 

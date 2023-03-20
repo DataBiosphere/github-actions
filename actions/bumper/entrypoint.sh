@@ -189,7 +189,6 @@ else
     else
         version_pattern="(.*)([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"
     fi
-
     version_line=$(cat $version_file_path | grep -e "${version_line_match}")
     if [ -z "$version_line" ]; then
         echo "No version line found; no bump of version file."
