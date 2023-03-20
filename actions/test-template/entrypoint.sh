@@ -41,8 +41,8 @@ main() {
     local test_data_fmt='{"logs":"%s"}'
     local test_data=$(printf "$test_data_fmt" "$action_run_url")
     edumpvar test_data
-    echo ::set-output name=status::$pass
-    echo ::set-output name=testData::$(echo "$test_data" | base64 | tr -d \\n)
+    echo status=$pass >> $GITHUB_OUTPUT
+    echo testData=$(echo "$test_data" | base64 | tr -d \\n) >> $GITHUB_OUTPUT
 }
 
 colblk='\033[0;30m' # Black - Regular

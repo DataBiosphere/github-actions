@@ -51,9 +51,9 @@ git fetch --tags
 
 # get latest tag that looks like a semver (with or without v, using with_v)
 if $with_v; then
-  tag_pattern="refs/tags/v[0-9]*.[0-9]*.[0-9]*"
+    tag_pattern="refs/tags/v[0-9]*.[0-9]*.[0-9]*"
 else
-  tag_pattern="refs/tags/[0-9]*.[0-9]*.[0-9]*"
+    tag_pattern="refs/tags/[0-9]*.[0-9]*.[0-9]*"
 fi
 case "$tag_context" in
     *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' "$tag_pattern" | cut -d / -f 3-);;
@@ -70,7 +70,7 @@ commit=$(git rev-parse HEAD)
 
 if [ "$tag_commit" == "$commit" ]; then
     echo "No new commits since previous tag. Skipping..."
-    echo ::set-output name=tag::$tag
+    echo tag=$tag >> $GITHUB_OUTPUT
     exit 0
 fi
 
@@ -142,30 +142,29 @@ then
     # prefix with 'v'
     if $with_v
     then
-	new="v$new"
+        new="v$new"
     fi
     
     if $pre_release
     then
-	new="$new-${commit:0:7}"
+        new="$new-${commit:0:7}"
     fi
 fi
 
 echo "New tag is $new"
 
 # set outputs
-echo ::set-output name=new_tag::$new
-echo ::set-output name=part::$part
+echo new_tag=$new >> $GITHUB_OUTPUT
+echo part=$part >> $GITHUB_OUTPUT
 
-# use dry run to determine the next tag
+# use dry run to determine the next tag
 if $dryrun
 then
-    echo ::set-output name=tag::$tag
+    echo tag=$tag >> $GITHUB_OUTPUT
     exit 0
 fi 
 
-echo ::set-output name=tag::$new
-
+echo tag=$new >> $GITHUB_OUTPUT
 
 if $pre_release
 then
@@ -184,11 +183,18 @@ else
     else
         version_new=${new}-${version_suffix}
     fi
+
+    if $with_v; then
+        version_pattern="(.*)v([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"
+    else
+        version_pattern="(.*)([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"
+    fi
+
     version_line=$(cat $version_file_path | grep -e "${version_line_match}")
     if [ -z "$version_line" ]; then
         echo "No version line found; no bump of version file."
     else
-        new_line=$(echo "$version_line" | sed -E -e "s/(.*)([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)/\1${version_new}\3/")
+        new_line=$(echo "$version_line" | sed -E -e "s/$version_pattern/\1${version_new}\3/")
         sed -E -i.bak -e "s/${version_line}/${new_line}/" $version_file_path
     fi
     git config --global user.email "robot@terra.team"

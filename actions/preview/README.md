@@ -17,7 +17,7 @@ This action contains the logic for managing the life-cycle of Terra preview envi
 |TERRA_HELMFILE_BRANCH|no|Branch of the terra-helmfile repo to use|master|
 
 ## Common output for all commands
-All of these commands output a Base64-encoded JSON with information about the environment and all services deployed using the GH actions `echo ::set-output name=output::[output string]` syntax
+All of these commands output a Base64-encoded JSON with information about the environment and all services deployed using the GH actions `echo output=[output string] >> $GITHUB_OUTPUT` syntax
 
 Example output (decoded from its original base64 output form):
 ```

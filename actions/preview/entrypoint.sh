@@ -111,7 +111,7 @@ main() {
         eok "Test results for environment $env_id reported"
     fi
 
-    echo ::set-output name=output::$(yq r -j output.yaml | base64 | tr -d \\n)
+    echo output=$(yq r -j output.yaml | base64 | tr -d \\n) >> $GITHUB_OUTPUT
 }
 
 terraform_apply() {
