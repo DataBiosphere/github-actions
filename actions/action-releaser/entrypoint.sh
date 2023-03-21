@@ -78,10 +78,14 @@ filter_actions() {
 
 lookup_changed_actions() {
     # look for changed files in the latest commit
-    # merge commits have multiple parents, use '^@' to fetch all parents of the merge
-    # use variable to handle newline in git-rev-parse output
+
+    # Merge commits: have multiple parents, fetch all parents of HEAD
+    # Other commits: fetch only current HEAD
     local commit_sha
-    commit_sha=$(git rev-parse HEAD HEAD^@)
+    commit_sha=$(git rev-parse HEAD^@)
+    if [ $(echo $commit_sha | wc -w) -eq 1 ]; then
+        commit_sha=$(git rev-parse HEAD)
+    fi
     einfo "Commits fetched: $(echo $commit_sha | tr ' ' ';')"
 
     local changed_files
