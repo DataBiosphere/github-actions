@@ -85,7 +85,6 @@ then
 else
     log=$(git log $tag..HEAD --pretty='%B')
 fi
-
 echo $log
 
 HOTFIX_REGEX="^hotfix\\.(0|[1-9][0-9]*)$"
