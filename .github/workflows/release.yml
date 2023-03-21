@@ -1,5 +1,6 @@
 name: Release Actions
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - master
