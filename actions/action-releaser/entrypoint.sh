@@ -80,8 +80,10 @@ lookup_changed_actions() {
     # look for changed files in the latest commit
     # merge commits have multiple parents, use '^@' to fetch all parents of the merge
     # use variable to handle newline in git-rev-parse output
-    local commit_sha=$(git rev-parse HEAD^@)
+    local commit_sha
+    commit_sha=$(git rev-parse HEAD^@)
     einfo "Commits fetched: $(echo $commit_sha | tr ' ' ';')"
+
     local changed_files
     changed_files=$(git diff-tree --no-commit-id --name-only -r $commit_sha -- $INPUT_ACTIONS_DIR)
     einfo "Changed files: $(echo $changed_files | tr ' ' ';')"
