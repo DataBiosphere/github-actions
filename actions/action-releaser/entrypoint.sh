@@ -65,13 +65,13 @@ lookup_latest_tag() {
 }
 
 filter_actions() {
-    while read action; do
+    while read -r action; do
         [[ ! -d "$INPUT_ACTIONS_DIR/$action" ]] && continue
         local action_yml="$INPUT_ACTIONS_DIR/$action/action.yml"
         if [[ -f "$action_yml" ]]; then
             echo "$action"
         else
-            ewarn "$action_yml is missing. Skipping."
+            ewarn "$action_yml is missing for action $action. Skipping."
         fi
     done
 }
@@ -81,8 +81,10 @@ lookup_changed_actions() {
     # merge commits have multiple parents, use '^@' to fetch all parents of the merge
     # use variable to handle newline in git-rev-parse output
     local commit_sha=$(git rev-parse HEAD^@)
+    einfo "Commits fetched: $(echo $commit_sha | tr ' ' ';')"
     local changed_files
     changed_files=$(git diff-tree --no-commit-id --name-only -r $commit_sha -- $INPUT_ACTIONS_DIR)
+    einfo "Changed files: $(echo $changed_files | tr ' ' ';')"
     cut -d '/' -f '2' <<< "$changed_files" | uniq | filter_actions
 }
 
