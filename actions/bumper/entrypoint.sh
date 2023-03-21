@@ -52,9 +52,12 @@ git fetch --tags
 # get latest tag that looks like a semver (with or without v, using with_v)
 if $with_v; then
     tag_pattern="refs/tags/v[0-9]*.[0-9]*.[0-9]*"
+    version_pattern="(.*)v([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"
 else
     tag_pattern="refs/tags/[0-9]*.[0-9]*.[0-9]*"
+    version_pattern="(.*)([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"
 fi
+
 case "$tag_context" in
     *repo*) tag=$(git for-each-ref --sort=-v:refname --count=1 --format '%(refname)' "$tag_pattern" | cut -d / -f 3-);;
     *branch*) tag=$(git describe --tags --match "*[v0-9].*[0-9\.]" --abbrev=0);;
@@ -184,11 +187,6 @@ else
         version_new=${new}-${version_suffix}
     fi
 
-    if $with_v; then
-        version_pattern="(.*)v([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"
-    else
-        version_pattern="(.*)([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"
-    fi
     version_line=$(cat $version_file_path | grep -e "${version_line_match}")
     if [ -z "$version_line" ]; then
         echo "No version line found; no bump of version file."
