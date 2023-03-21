@@ -49,7 +49,7 @@ echo "pre_release = $pre_release"
 # fetch tags
 git fetch --tags
 
-# get latest tag that looks like a semver (with or without v, using with_v)
+# get latest tag & version that looks like a semver (with or without v, using with_v)
 if $with_v; then
     tag_pattern="refs/tags/v[0-9]*.[0-9]*.[0-9]*"
     version_pattern="(.*)v([0-9]+\.[0-9]+\.[0-9]+-?[a-zA-Z0-9]*)(.*)"

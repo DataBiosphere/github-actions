@@ -81,7 +81,7 @@ lookup_changed_actions() {
     # merge commits have multiple parents, use '^@' to fetch all parents of the merge
     # use variable to handle newline in git-rev-parse output
     local commit_sha
-    commit_sha=$(git rev-parse HEAD HEAD^@)
+    commit_sha=$(git rev-parse HEAD^@)
     einfo "Commits fetched: $(echo $commit_sha | tr ' ' ';')"
 
     local changed_files
