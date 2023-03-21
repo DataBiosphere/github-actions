@@ -153,7 +153,6 @@ then
         new="$new-${commit:0:7}"
     fi
 fi
-
 echo "New tag is $new"
 
 # set outputs
