@@ -61,7 +61,7 @@ lookup_latest_tag() {
     git fetch --tags > /dev/null 2>&1
 
     edebug "Looking for latest tag for $action"
-    git for-each-ref --sort=-taggerdate --count=1 --format '%(refname:lstrip=-1)' "refs/tags/$action-*"
+    git for-each-ref --sort=-committerdate --count=1 --format '%(refname:lstrip=-1)' "refs/tags/$action-*"
 }
 
 filter_actions() {
@@ -109,7 +109,8 @@ tag_action() {
     local version="$2"
     local tag="$action-$version"
 
-    einfo "Creating tag '$tag'"
+    # lightweight tags do not have taggerdate set
+    einfo "Creating lightweight tag '$tag'"
     git tag "$tag"
 }
 
