@@ -31,4 +31,4 @@ inputs:
     default: broadbot
 runs:
   using: 'docker'
-  image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/action-releaser:0.6.0
+  image: 'Dockerfile'
