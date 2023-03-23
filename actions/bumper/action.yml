@@ -3,7 +3,7 @@ description: 'Bump and push git tag on merge'
 author: 'Nick Sjostrom'
 runs:
   using: 'docker'
-  image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/bumper:0.1.0
+  image: docker://us-central1-docker.pkg.dev/dsp-artifact-registry/github-actions-public/bumper:0.2.0
 outputs:
   new_tag:
     description: 'Generated tag'
