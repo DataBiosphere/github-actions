@@ -196,11 +196,14 @@ else
         version_line_match_i=${line_match[$i]}
         echo "Updating $version_file_path_i located at $version_line_match_i"
         
+        echo $(cat $version_file_path_i)
         version_line=$(cat $version_file_path_i | grep -e "${version_line_match_i}")
+        echo "Version line: ${version_line}"
         if [ -z "$version_line" ]; then
             echo "No version line found; no bump of version file."
         else
             new_line=$(echo "$version_line" | sed -E -e "s/$version_pattern/\1${version_new}\3/")
+            echo "New version line: ${new_line}"
             sed -E -i.bak -e "s/${version_line}/${new_line}/" $fp
         fi
         git add $version_file_path_i
