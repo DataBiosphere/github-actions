@@ -204,7 +204,7 @@ else
         else
             new_line=$(echo "$version_line" | sed -E -e "s/$version_pattern/\1${version_new}\3/")
             echo "New version line: ${new_line}"
-            sed -E -i.bak -e "s/${version_line}/${new_line}/" $fp
+            sed -E -i.bak -e "s/${version_line}/${new_line}/" $version_file_path_i
         fi
         git add $version_file_path_i
     done
