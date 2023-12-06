@@ -36,14 +36,23 @@ if $hotfix_release; then
 else
     pre_release="true"
     IFS=',' read -ra branch <<< "$release_branches"
+    # Updated to same logic as upstream github-tag-action
+    # https://github.com/anothrNick/github-tag-action/blob/master/entrypoint.sh#L62-#L74
     for b in "${branch[@]}"; do
+        # check if ${current_branch} is in ${release_branches} | exact branch match
         echo "Is $b a match for ${current_branch}"
-        if [[ "${current_branch}" =~ $b ]]
+        if [[ "$current_branch" == "$b" ]]
+        then
+            pre_release="false"
+        fi
+        # verify non specific branch names like  .* release/* if wildcard filter then =~
+        echo "Is $b a non specific branch names like  .* release/*, if so do wildcard filter then =~"
+        if [ "$b" != "${b//[\[\]|.? +*]/}" ] && [[ "$current_branch" =~ $b ]]
         then
             pre_release="false"
         fi
     done
-fi    
+fi
 echo "pre_release = $pre_release"
 
 # fetch tags
@@ -111,7 +120,7 @@ if $hotfix_release; then
     fi
     new=$(semver bump prerel $hotfix_string $tag)
     part="hotfix"
-else           
+else
     # For non-hotfix, we compute the new version
     # If there is an override for what part to bump, use that. If there is a #xyz in the log message, use that.
     # Othewise, use the default part.
@@ -146,7 +155,7 @@ then
     then
         new="v$new"
     fi
-    
+
     if $pre_release
     then
         new="$new-${commit:0:7}"
@@ -163,7 +172,7 @@ if $dryrun
 then
     echo tag=$tag >> $GITHUB_OUTPUT
     exit 0
-fi 
+fi
 
 echo tag=$new >> $GITHUB_OUTPUT
 
