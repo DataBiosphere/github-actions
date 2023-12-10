@@ -194,16 +194,27 @@ else
         version_new=${new}-${version_suffix}
     fi
 
-    version_line=$(cat $version_file_path | grep -e "${version_line_match}")
-    if [ -z "$version_line" ]; then
-        echo "No version line found; no bump of version file."
-    else
-        new_line=$(echo "$version_line" | sed -E -e "s/$version_pattern/\1${version_new}\3/")
-        sed -E -i.bak -e "s/${version_line}/${new_line}/" $version_file_path
-    fi
     git config --global user.email "robot@terra.team"
     git config --global user.name "bumptagbot"
-    git add $version_file_path
+
+    # check for multiple version file paths to update
+    IFS=',' read -ra file_path <<< "$version_file_path"
+    IFS=',' read -ra line_match <<< "$version_line_match"
+    for i in "${!file_path[@]}"; do
+        version_file_path_i=${file_path[$i]}
+        version_line_match_i=${line_match[$i]}
+        echo "Updating $version_file_path_i located at $version_line_match_i"
+        
+        version_line=$(cat $version_file_path_i | grep -e "${version_line_match_i}")
+        if [ -z "$version_line" ]; then
+            echo "No version line found; no bump of version file."
+        else
+            new_line=$(echo "$version_line" | sed -E -e "s/$version_pattern/\1${version_new}\3/")
+            sed -E -i.bak -e "s/${version_line}/${new_line}/" $version_file_path_i
+        fi
+        git add $version_file_path_i
+    done
+  
     git commit -m "bump ${new}"
     git push origin $current_branch
     commit=$(git rev-parse HEAD)

@@ -49,8 +49,8 @@ jobs:
 * **DRY_RUN** *(optional)* - Determine the next version without tagging the branch. The workflow can use the outputs `new_tag` and `tag` in subsequent steps. Possible values are ```true``` and ```false``` (default).
 * **INITIAL_VERSION** *(optional)* - Set initial version before bump. Default `0.0.0`.
 * **TAG_CONTEXT** *(optional)* - Set the context of the previous tag. Possible values are `repo` (default) or `branch`.
-* **VERSION_FILE_PATH** *(optional)* - If present, update the version number in that file
-* **VERSION_LINE_MATCH** *(optional)* - If present, a grep regular expression to identify the line containing the version number in the VERSION_FILE_PATH.
+* **VERSION_FILE_PATH** *(optional)* - If present, update the version number each file listed (can provide multiple files separated by a comma) Examples: `build.gradle` or `build.gradle,settings.gradle`
+* **VERSION_LINE_MATCH** *(optional)* - If present, a grep regular expression to identify the line containing the version number in the VERSION_FILE_PATH. If multiple file paths are provided, list the same number of regular expressions comma separated in the same order as presented in VERSION_FILE_PATH. Note: regular expressions containing commas will not work. 
 * **VERSION_SUFFIX** *(optional)* - Suffix added to the version in the version file, such as, -SNAPSHOT
 
 #### Outputs
