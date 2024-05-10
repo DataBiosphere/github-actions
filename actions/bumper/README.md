@@ -52,6 +52,7 @@ jobs:
 * **VERSION_FILE_PATH** *(optional)* - If present, update the version number in that file
 * **VERSION_LINE_MATCH** *(optional)* - If present, a grep regular expression to identify the line containing the version number in the VERSION_FILE_PATH.
 * **VERSION_SUFFIX** *(optional)* - Suffix added to the version in the version file, such as, -SNAPSHOT
+* **FORCE_WITHOUT_CHANGES** *(optional)* - Bump even if there are no changes from the previous version.
 
 #### Outputs
 

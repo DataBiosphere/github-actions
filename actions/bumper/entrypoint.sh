@@ -14,6 +14,7 @@ version_file_path=${VERSION_FILE_PATH}
 version_line_match=${VERSION_LINE_MATCH}
 version_suffix=${VERSION_SUFFIX}
 hotfix_version=${HOTFIX_VERSION}
+force_without_changes=${FORCE_WITHOUT_CHANGES:-false}
 
 cd ${GITHUB_WORKSPACE}/${source}
 git config --global --add safe.directory $(pwd)
@@ -80,7 +81,7 @@ tag_commit=$(git rev-list -n 1 $tag)
 # get current commit hash
 commit=$(git rev-parse HEAD)
 
-if [ "$tag_commit" == "$commit" ]; then
+if [ "$tag_commit" == "$commit" ] && [ "$force_without_changes" == "false" ]; then
     echo "No new commits since previous tag. Skipping..."
     echo tag=$tag >> $GITHUB_OUTPUT
     exit 0
