@@ -1,9 +1,6 @@
 name: write-json-to-job-summary
 author: 'Teaspoons Team'
 description: 'Writes a dynamically generated markdown table of inputs JSON to the GitHub step summary'
-branding:
-  icon: 'list'
-  color: 'blue'
 
 inputs:
   inputs-json:
@@ -12,7 +9,7 @@ inputs:
   title:
     description: 'The heading title for the summary table'
     required: false
-    default: 'Workflow Inputs'
+    default: 'GHA Workflow Inputs'
 
 runs:
   using: composite
