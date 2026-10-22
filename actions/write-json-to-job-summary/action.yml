@@ -7,7 +7,7 @@ branding:
 
 inputs:
   inputs-json:
-    description: 'JSON object of parameter names and values, passed via ${{ toJSON(inputs) }}'
+    description: 'JSON object of parameter names and values, typically passed via toJSON(inputs) in the calling workflow'
     required: true
   title:
     description: 'The heading title for the summary table'
