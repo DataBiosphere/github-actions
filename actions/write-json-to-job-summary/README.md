@@ -1,8 +1,10 @@
 # write-json-to-job-summary
 
-A composite action that renders a JSON object as a markdown table in the GitHub Actions job summary. It is most useful for recording the inputs a workflow was run with, e.g. from `workflow_dispatch`.
+A composite action that renders a JSON object as a markdown table in the GitHub Actions job summary. 
+It is most useful for recording the inputs a workflow was run with, e.g. from `workflow_dispatch`.
 
-Because it is a composite action, it runs directly on the runner. There is no Docker image to build. It requires `jq`, which is preinstalled on GitHub-hosted runners.
+Because it is a composite action, it runs directly on the runner. There is no Docker image to build. 
+It requires `jq`, which is preinstalled on GitHub-hosted runners.
 
 ## Usage
 
@@ -29,7 +31,6 @@ jobs:
 ```
 
 This produces a job summary like:
-
 ```
 ### Workflow Inputs
 
@@ -47,7 +48,6 @@ This produces a job summary like:
 | `title` | Heading for the summary table                                                           | false    | GHA Workflow Inputs |
 
 ## Behaviour
-
 - Each key/value pair in the JSON object becomes one table row.
 - Null values are shown as `Not provided`.
 - Non-string values (booleans, numbers, nested objects) are rendered as their JSON text, so `false` is shown as `false`.
@@ -55,5 +55,4 @@ This produces a job summary like:
 - If `inputs-json` is empty, `null` or `{}`, the summary shows `*No inputs provided.*` instead of a table.
 
 ## Outputs
-
 None. The action only writes to `$GITHUB_STEP_SUMMARY`.
