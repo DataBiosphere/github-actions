@@ -21,7 +21,7 @@ main() {
             if [[ -d "$INPUT_ACTIONS_DIR/$action" ]]; then
                 local current_tag=$(lookup_latest_tag $action)
                 if [[ "$current_tag" == '' ]]; then
-                    local new_semver="0.0.0"
+                    local new_semver="0.1.0"
                 else
                     local current_semver=${current_tag#"$action-"}
                     local new_semver=$(semver bump $INPUT_VERSION_BUMP_LEVEL $current_semver)
