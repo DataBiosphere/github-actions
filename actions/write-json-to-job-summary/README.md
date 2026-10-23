@@ -41,12 +41,12 @@ This produces a job summary like:
 
 ## Inputs
 
-| Name | Description | Required | Default           |
-| :--- | :--- | :--- |:------------------|
-| `inputs-json` | JSON object of parameter names and values, typically passed via `${{ toJSON(inputs) }}`. | `true` | None |             |
-| `title` | Heading for the summary table. | `false` | `Workflow Inputs` |
+| Name | Description                                                                             | Required | Default             |
+| :--- |:----------------------------------------------------------------------------------------|:---------|:--------------------|
+| `inputs-json` | JSON object of parameter names and values, typically passed via `${{ toJSON(inputs) }}` | true     | None                |             |
+| `title` | Heading for the summary table                                                           | false    | GHA Workflow Inputs |
 
-## Behavior
+## Behaviour
 
 - Each key/value pair in the JSON object becomes one table row.
 - Null values are shown as `Not provided`.
