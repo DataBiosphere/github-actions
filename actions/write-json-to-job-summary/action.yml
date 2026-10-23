@@ -1,0 +1,36 @@
+name: write-json-to-job-summary
+author: 'Teaspoons Team'
+description: 'Writes a dynamically generated markdown table of inputs JSON to the GitHub step summary'
+
+inputs:
+  inputs-json:
+    description: 'JSON object of parameter names and values, typically passed via toJSON(inputs) in the calling workflow'
+    required: true
+  title:
+    description: 'The heading title for the summary table'
+    required: false
+    default: 'GHA Workflow Inputs'
+
+runs:
+  using: composite
+  steps:
+    - name: Write inputs table
+      shell: bash
+      env:
+        INPUTS_JSON: ${{ inputs.inputs-json }}
+        TABLE_TITLE: ${{ inputs.title }}
+      run: |
+        {
+          echo "### $TABLE_TITLE"
+          echo ""
+        
+          if [ -n "$INPUTS_JSON" ] && [ "$INPUTS_JSON" != "null" ] && [ "$INPUTS_JSON" != "{}" ]; then
+            echo "| Parameter | Value |"
+            echo "| :--- | :--- |"
+            echo "$INPUTS_JSON" | jq -r '
+              def cell: tostring | gsub("\\|"; "\\|") | gsub("\r?\n"; "<br>");
+              to_entries[] | "| **\(.key | cell)** | \((if .value == null then "Not provided" else .value end) | cell) |"'
+          else
+            echo "*No inputs provided.*"
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
