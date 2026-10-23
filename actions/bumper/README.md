@@ -47,7 +47,7 @@ jobs:
   accepted) that will generate hotfix tags. Example: `hotfix.*`
 * **SOURCE** *(optional)* - Operate on a relative path under $GITHUB_WORKSPACE.
 * **DRY_RUN** *(optional)* - Determine the next version without tagging the branch. The workflow can use the outputs `new_tag` and `tag` in subsequent steps. Possible values are ```true``` and ```false``` (default).
-* **INITIAL_VERSION** *(optional)* - Set initial version before bump. Default `0.1.0`.
+* **INITIAL_VERSION** *(optional)* - Set initial version before bump. Default `0.0.0`.
 * **TAG_CONTEXT** *(optional)* - Set the context of the previous tag. Possible values are `repo` (default) or `branch`.
 * **VERSION_FILE_PATH** *(optional)* - If present, update the version number in that file
 * **VERSION_LINE_MATCH** *(optional)* - If present, a grep regular expression to identify the line containing the version number in the VERSION_FILE_PATH.

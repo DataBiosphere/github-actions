@@ -8,7 +8,7 @@ release_branches=${RELEASE_BRANCHES:-main}
 hotfix_branches=${HOTFIX_BRANCHES:-hotfix.*}
 source=${SOURCE:-.}
 dryrun=${DRY_RUN:-false}
-initial_version=${INITIAL_VERSION:-0.1.0}
+initial_version=${INITIAL_VERSION:-0.0.0}
 tag_context=${TAG_CONTEXT:-repo}
 version_file_path=${VERSION_FILE_PATH}
 version_line_match=${VERSION_LINE_MATCH}
@@ -87,7 +87,7 @@ if [ "$tag_commit" == "$commit" ] && [ "$force_without_changes" == "false" ]; th
     exit 0
 fi
 
-# if there are none, start tags at INITIAL_VERSION which defaults to 0.1.0
+# if there are none, start tags at INITIAL_VERSION which defaults to 0.0.0
 if [ -z "$tag" ]
 then
     log=$(git log --pretty='%B')
